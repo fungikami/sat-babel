@@ -27,34 +27,37 @@ Número de variables: $n^2d(h-1)$
 
 #### Restricciones
 
-<!-- * Un participante no puede jugar contra sí mismo.
+* Un participante no puede jugar contra sí mismo.
 
-$$(\forall i)(\neg x_{ii})$$
+$$\neg x_{iikl}$$
 
 * Todos los participantes deben jugar dos veces con cada uno de los otros participantes, una como "visitantes" y la otra como "locales".
 
-$$(\forall i, j)(\exists k, l)(i \neq j)(x_{ijkl})$$
+$$(\forall i, j| i \neq j: (\exists k, l|:x_{ijkl}))$$
 
 * Dos juegos no pueden ocurrir al mismo tiempo.
 
-$$(\forall i, j, u, v, k, l)(i \neq u)(j \neq v)(x_{ijkl} \implies \neg x_{uvkl})$$ 
-
-o
-
-$$(\forall i, j, k, l)(x_{ijkl} \implies \neg ((\exist u, v)(i \neq u)(j \neq v)(x_{uvkl})))$$
-
- Agregar \land \neg x_{uvk(l+1)} ?
+$$x_{ijkl} \implies \neg (\exist u, v|i \neq u \land j \neq v:x_{uvkl})$$
 
 * Un participante puede jugar a lo sumo una vez por día.
 
-$$(\forall i, j, k, l, m)(i \neq j)(k \neq m)(x_{ijkl} \implies \neg x_{ijml})$$
+$$x_{ijkl} \implies \neg (\exists n, m | n \notin \{i, j\} :x_{inkm} \lor x_{njkm} \lor x_{jnkm} \lor x_{nikm} )$$
 
 * Un participante no puede jugar de "visitante" en dos días consecutivos, ni de "local" dos días seguidos.
-* Todos los juegos deben empezar en horas "en punto" (por ejemplo, las 13:00:00 es una hora válida pero las 13:30:00 no).
-* Todos los juegos deben ocurrir entre una fecha inicial y una fecha final especificadas. Pueden ocurrir juegos en dichas fechas.
-* Todos los juegos deben ocurrir entre un rango de horas especificado, el cuál será fijo para todos los días del torneo.
-* A efectos prácticos, todos los juegos tienen una duración de dos horas. -->
 
+$$x_{ijkl} \implies \neg (\exists n, m | n \notin \{i, j\} :x_{in(k+1)m} \lor x_{nj(k+1)m} )$$
+
+* Todos los juegos deben empezar en horas "en punto" (por ejemplo, las 13:00:00 es una hora válida pero las 13:30:00 no).
+
+* Todos los juegos deben ocurrir entre una fecha inicial y una fecha final especificadas. Pueden ocurrir juegos en dichas fechas.
+
+* Todos los juegos deben ocurrir entre un rango de horas especificado, el cuál será fijo para todos los días del torneo.
+
+La forma en que se modela el problema garantiza que todos los juegos empiezan en horas "en punto", ocurren entre una fecha inicial y una fecha final especificadas, y en un rango de horas especificado.
+
+* A efectos prácticos, todos los juegos tienen una duración de dos horas.
+
+Una restricción arriba garantiza que no hayan juegos que se traslapen en ninguna de las dos horas.
 
 ### 2.2. Algoritmos de búsqueda
 
