@@ -16,7 +16,6 @@ SAT es importante
 
 ### 2.1. Representación del problema
 
-<!-- How can I insert inline latex?: $x^2$ -->
 $x_{ijkl}$: Variable que representa si el jugador $i$ juega local contra el jugador $j$ el día $k$ a la hora $l$.
 
 $$x_{ijkl} \in \{\text{True}, \text{False}\}$$
@@ -44,7 +43,7 @@ o
 
 $$(\forall i, j, k, l)(x_{ijkl} \implies \neg ((\exist u, v)(i \neq u)(j \neq v)(x_{uvkl})))$$
 
-<!-- Agregar \land \neg x_{uvk(l+1)} ? -->
+ Agregar \land \neg x_{uvk(l+1)} ?
 
 * Un participante puede jugar a lo sumo una vez por día.
 
