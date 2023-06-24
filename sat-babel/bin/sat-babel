@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+require_relative '../lib/translation'
+
+puts "Hello World!"
+puts "Ruby version: " + RUBY_VERSION
+
+# Read from ARGV
+json_var = read_json_file(ARGV[0])
+print_json(json_var)
