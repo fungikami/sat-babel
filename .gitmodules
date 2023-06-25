@@ -1,3 +1,4 @@
 [submodule "glucose"]
 	path = glucose
 	url = git@github.com:audemard/glucose.git
+	branch = main
