@@ -27,17 +27,17 @@ Número de variables: $n^2d(h-1)$
 
 #### Restricciones
 
-* Un participante no puede jugar contra sí mismo.
+* Un participante no puede jugar contra sí mismo. $nd(h-1)$ cláusulas.
 
 $$\neg x_{iikl}$$
 
-* Todos los participantes deben jugar dos veces con cada uno de los otros participantes, una como "visitantes" y la otra como "locales".
+* Todos los participantes deben jugar dos veces con cada uno de los otros participantes, una como "visitantes" y la otra como "locales". $n(n-1)$ cláusulas.
 
 $$(\forall i, j| i \neq j: (\exists k, l|:x_{ijkl}))$$
 
 * Dos juegos no pueden ocurrir al mismo tiempo.
 
-$$x_{ijkl} \implies \neg (\exist u, v|i \neq u \land j \neq v:x_{uvkl})$$
+$$x_{ijkl} \implies \neg (\exist u, v|i \neq u \lor j \neq v:x_{uvkl} \lor x_{uvk(l+1)})$$
 
 * Un participante puede jugar a lo sumo una vez por día.
 
@@ -63,7 +63,6 @@ Una restricción arriba garantiza que no hayan juegos que se traslapen en ningun
 
 
 ### 2.3. Evaluación de los algoritmos
-
 
 
 ## 3. Resultados experimentales

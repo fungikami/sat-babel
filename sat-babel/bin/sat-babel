@@ -1,9 +1,40 @@
 #!/usr/bin/env ruby
-require_relative '../lib/translation'
+require 'json'
+require_relative '../lib/utils'
 
-puts "Hello World!"
-puts "Ruby version: " + RUBY_VERSION
+# Main function
+def main
+    # TO-DO: Add a CLI library
 
-# Read from ARGV
-json_var = read_json_file(ARGV[0])
-print_json(json_var)
+    # If no arguments, print usage
+    if ARGV.length == 0
+        puts "Usage: sat-babel <file>"
+        exit
+    end
+
+    # Read from ARGV
+    file = File.read(ARGV[0])
+    data = JSON.parse(file)
+
+    n_hours = get_hours(data["start_time"], data["end_time"])
+    n_days = get_days(data["start_date"], data["end_date"])
+
+    # Print parsed data
+    puts "Tournament: #{data["tournament_name"]}"
+    puts "Participants: #{data["participants"].join(", ")}"
+    puts "Hours: #{n_hours}"
+    puts "Days: #{n_days}"
+
+=begin
+    Layout:
+
+    translate_to_cnf(data["participants"], n_days, n_hours, filename)
+    solve_cnf(input_filename, output_filename)
+    translate_to_ics(output_filename)
+
+    puts "Done! Check your calendar."
+=end
+
+end
+
+main if __FILE__ == $0

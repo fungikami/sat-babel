@@ -1,11 +1,11 @@
 {
     "tournament_name": "El más goldo",
-    "start_date": "2023-06-24",
-    "end_date": "2020-06-25",
-    "start_time": "14:00:00.000",
-    "end_time": "16:00:00.000",
+    "start_date": "2020-02-28",
+    "end_date": "2020-03-02",
+    "start_time": "13:01:00.000",
+    "end_time": "16:59:00.000",
     "participants": [
         "Kama",
         "Chuwo"
     ]
-  }
+}
