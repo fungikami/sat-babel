@@ -37,7 +37,7 @@ $$(\forall i, j| i \neq j: (\exists k, l|:x_{ijkl}))$$
 
 * Dos juegos no pueden ocurrir al mismo tiempo.
 
-$$x_{ijkl} \implies \neg (\exist u, v|i \neq u \lor j \neq v:x_{uvkl} \lor x_{uvk(l+1)})$$
+$$x_{ijkl} \implies \neg (\exists u, v|i \neq u \lor j \neq v:x_{uvkl} \lor x_{uvk(l+1)})$$
 
 * Un participante puede jugar a lo sumo una vez por día.
 
