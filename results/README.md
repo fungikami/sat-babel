@@ -19,9 +19,9 @@ SAT es importante
 $x_{ijkl}$: Variable que representa si el jugador $i$ juega local contra el jugador $j$ el día $k$ a la hora $l$.
 
 $$x_{ijkl} \in \{\text{True}, \text{False}\}$$
-$$i,j \in [0..n)$$
-$$k \in [0..d)$$
-$$l \in [0..h-1)$$
+$$i,j \in [0..n), \; n \geq 2$$
+$$k \in [0..d), \; d\geq 2$$
+$$l \in [0..h-1), \; h \geq 2$$
 
 Número de variables: $n^2d(h-1)$
 
@@ -29,19 +29,70 @@ Número de variables: $n^2d(h-1)$
 
 * Un participante no puede jugar contra sí mismo. $nd(h-1)$ cláusulas.
 
-$$\neg x_{iikl}$$
+$$(\forall i, k, l: \neg x_{iikl})$$
 
 * Todos los participantes deben jugar dos veces con cada uno de los otros participantes, una como "visitantes" y la otra como "locales". $n(n-1)$ cláusulas.
 
 $$(\forall i, j| i \neq j: (\exists k, l|:x_{ijkl}))$$
 
-* Dos juegos no pueden ocurrir al mismo tiempo.
+* Dos juegos no pueden ocurrir al mismo tiempo. $n(n-1)d(n(n-1)-1)(2h-3)$ cláusulas.
 
-$$x_{ijkl} \implies \neg (\exists u, v|i \neq u \lor j \neq v:x_{uvkl} \lor x_{uvk(l+1)})$$
+$$ (\forall i, j, k, l | i \neq j :x_{ijkl} \implies \neg (\exists u, v|(i \neq u \lor j \neq v) \land u \neq v:x_{uvkl})) \\ 
+\land \\
+(\forall i, j, k, l | i \neq j \land l < h-2 :x_{ijkl} \implies \neg (\exists u, v|(i \neq u \lor j \neq v) \land u \neq v:x_{uvk(l+1)}))$$
+
+<!--
+Para un ijkl fijo:
+
+n(n-1)-1 cláusulas (uv != ij)
+(
+    -xijkl v -xuvkl ^
+    ...
+) ^
+n(n-1)-1 cláusulas (uv != ij)
+(
+    -xijkl v -xuvkl+1 ^
+    ...
+) ^
+
+Son n(n-1)d(h-1) y n(n-1)d(h-2) combinaciones de ijkl, respectivamente, por lo que el total de cláusulas es:
+
+n(n-1)d(h-1)(n(n-1)-1) + n(n-1)d(h-2)(n(n-1)-1)
+
+=
+
+n(n-1)d((h-1)(n(n-1)-1) + (h-2)(n(n-1)-1))
+
+=
+
+n(n-1)d(n(n-1)-1)(h-1+h-2)
+
+=
+
+n(n-1)d(n(n-1)-1)(2h-3)
+-->
 
 * Un participante puede jugar a lo sumo una vez por día.
 
-$$x_{ijkl} \implies \neg (\exists n, m | n \notin \{i, j\} :x_{inkm} \lor x_{njkm} \lor x_{jnkm} \lor x_{nikm} )$$
+$$(\forall i, j, k, l | i \neq j : x_{ijkl} \implies \neg (\exists n, m | n \notin \{i, j\} :x_{inkm} \lor x_{njkm} \lor x_{jnkm} \lor x_{nikm}))$$
+
+<!--
+Para un ijkl fijo:
+
+n-2 cláusulas (n != i, j)
+(
+    -xijkl v -xinkm v -xnjkm v -xjnkm v -xnikm ^
+    ...
+) ^
+
+Son n(n-1)d(h-1) combinaciones de ijkl, por lo que el total de cláusulas es:
+
+n(n-1)d(h-1)(n-2)
+
+=
+
+n(n-1)d(n-2)(h-1)
+-->
 
 * Un participante no puede jugar de "visitante" en dos días consecutivos, ni de "local" dos días seguidos.
 
