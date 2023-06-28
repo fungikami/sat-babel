@@ -79,24 +79,12 @@ $$(\forall i, j, k, l | i \neq j : x_{ijkl} \implies \neg (\exists n, m | n \not
 <!--
 Para un ijkl fijo:
 
-n-2 cláusulas (n != i, j)
-(
-    -xijkl v -xinkm v -xnjkm v -xjnkm v -xnikm ^
-    ...
-) ^
-
-Son n(n-1)d(h-1) combinaciones de ijkl, por lo que el total de cláusulas es:
-
-n(n-1)d(h-1)(n-2)
-
-=
-
-n(n-1)d(n-2)(h-1)
+...
 -->
 
 * Un participante no puede jugar de "visitante" en dos días consecutivos, ni de "local" dos días seguidos.
 
-$$x_{ijkl} \implies \neg (\exists n, m | n \notin \{i, j\} :x_{in(k+1)m} \lor x_{nj(k+1)m} )$$
+$$(\forall i, j, k, l | i \neq j \land k < d - 1 : x_{ijkl} \implies \neg (\exists n, m | n \notin \{i, j\} :x_{in(k+1)m} \lor x_{nj(k+1)m}))$$
 
 * Todos los juegos deben empezar en horas "en punto" (por ejemplo, las 13:00:00 es una hora válida pero las 13:30:00 no).
 
