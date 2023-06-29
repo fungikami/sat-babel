@@ -37,9 +37,11 @@ $$(\forall i, j| i \neq j: (\exists k, l|:x_{ijkl}))$$
 
 * Dos juegos no pueden ocurrir al mismo tiempo. $n(n-1)d(n(n-1)-1)(2h-3)$ cláusulas.
 
-$$ (\forall i, j, k, l | i \neq j :x_{ijkl} \implies \neg (\exists u, v|(i \neq u \lor j \neq v) \land u \neq v:x_{uvkl})) \\ 
-\land \\
-(\forall i, j, k, l | i \neq j \land l < h-2 :x_{ijkl} \implies \neg (\exists u, v|(i \neq u \lor j \neq v) \land u \neq v:x_{uvk(l+1)}))$$
+$$ (\forall i, j, k, l | i \neq j :x_{ijkl} \implies \neg (\exists u, v|(i \neq u \lor j \neq v) \land u \neq v:x_{uvkl})) $$
+
+$$ \land $$
+
+$$ (\forall i, j, k, l | i \neq j \land l < h-2 :x_{ijkl} \implies \neg (\exists u, v|(i \neq u \lor j \neq v) \land u \neq v:x_{uvk(l+1)})) $$
 
 <!--
 Para un ijkl fijo:
@@ -77,8 +79,17 @@ n(n-1)d(n(n-1)-1)(2h-3)
 $$(\forall i, j, k, l | i \neq j : x_{ijkl} \implies \neg (\exists n, m | n \notin \{i, j\} :x_{inkm} \lor x_{njkm} \lor x_{jnkm} \lor x_{nikm}))$$
 
 <!--
+
+xijkl => -(xinkm v 
+
 Para un ijkl fijo:
 
+(
+    -xijkl v -inkm ^
+    -xijkl v -njkm ^
+    -xijkl v -jnkm ^
+    -xijkl v -nikm ^
+) ^
 ...
 -->
 
