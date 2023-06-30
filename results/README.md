@@ -92,10 +92,29 @@ Para un ijkl fijo:
 ) ^
 ...
 -->
+---
+
+$$(\forall i, j, k, l | i \neq j : x_{ijkl} \implies $$
+
+$$(\neg (\exists n, m | n \notin \{i, j\} :x_{inkm} \lor x_{njkm} \lor x_{jnkm} \lor x_{nikm})) \land (\neg (\exists m | m \neq l : x_{ijkm}) ) )$$
+
+---
+
+Pa toda participante, participa en una hora o no participa en ninguna.
+$$(\forall i, j, k, l, m, o | i \neq j \land i \neq k \land m \neq o : (\neg(x_{ijlm}) \lor \neg(x_{iklo})) \land (\neg(x_{jilm}) \lor \neg(x_{kilo}))) \land $$
+
+Y pa todo participante, participa como local o como visitante, pero no como ambos.
+$$(\forall i, j, k, l, m, o | i \neq j \land i \neq k \land j \neq k \land m \neq o : (\neg(x_{ijlm}) \lor \neg(x_{ijlo})) ) $$
 
 * Un participante no puede jugar de "visitante" en dos días consecutivos, ni de "local" dos días seguidos.
 
 $$(\forall i, j, k, l | i \neq j \land k < d - 1 : x_{ijkl} \implies \neg (\exists n, m | n \notin \{i, j\} :x_{in(k+1)m} \lor x_{nj(k+1)m}))$$
+
+---
+
+$$(\forall i, j, k, l, m, o | i \neq j \land i \neq k \land j \neq k : (\neg(x_{ijlm}) \lor \neg(x_{ik(l+1)o})) \land (\neg(x_{jilm}) \lor \neg(x_{ki(l+1)o}))) $$
+
+
 
 * Todos los juegos deben empezar en horas "en punto" (por ejemplo, las 13:00:00 es una hora válida pero las 13:30:00 no).
 
