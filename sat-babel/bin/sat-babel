@@ -1,38 +1,52 @@
 #!/usr/bin/env ruby
 require 'json'
 require_relative '../lib/utils'
+require_relative '../lib/sat_babel_options'
 
 # Main function
 def main
-    # TO-DO: Add a CLI library
+=begin no sé si hacerlo así
+  options = SatBabelOptions.parse(ARGV)
+=end
+  bin_name = File.basename($PROGRAM_NAME)
+  
+  # If no arguments, print usage
+  if ARGV.empty?
+    puts "#{bin_name}: No arguments provided"
+    puts "Usage: #{bin_name} FILE"
+    exit 1
+  end
 
-    # If no arguments, print usage
-    if ARGV.length == 0
-        puts "Usage: sat-babel <file>"
-        exit
-    end
-
-    # Read from ARGV
+  # Parse JSON file provided as argument, handle errors
+  begin
     file = File.read(ARGV[0])
-    data = JSON.parse(file)
+  rescue Errno::ENOENT => e
+    puts "#{bin_name}: #{ARGV[0]}: No such file"
+    exit 1
+  rescue => e
+    puts "#{bin_name}: #{ARGV[0]}: Invalid JSON"
+    exit 1
+  end
 
-    n_hours = get_hours(data["start_time"], data["end_time"])
-    n_days = get_days(data["start_date"], data["end_date"])
+  data = JSON.parse(file)
 
-    # Print parsed data
-    puts "Tournament: #{data["tournament_name"]}"
-    puts "Participants: #{data["participants"].join(", ")}"
-    puts "Hours: #{n_hours}"
-    puts "Days: #{n_days}"
+  n_days = get_days(data["start_date"], data["end_date"])
+  n_hours = get_hours(data["start_time"], data["end_time"])
+
+  # Print parsed data
+  puts "Tournament: #{data["tournament_name"]}"
+  puts "Participants: #{data["participants"].join(", ")}"
+  puts "Days: #{n_days}"
+  puts "Hours: #{n_hours}"
 
 =begin
-    Layout:
+  Layout:
 
-    translate_to_cnf(data["participants"], n_days, n_hours, filename)
-    solve_cnf(input_filename, output_filename)
-    translate_to_ics(output_filename)
+  translate_to_cnf(data["participants"], n_days, n_hours, filename)
+  solve_cnf(input_filename, output_filename)
+  translate_to_ics(output_filename)
 
-    puts "Done! Check your calendar."
+  puts "Done! Check your calendar."
 =end
 
 end
