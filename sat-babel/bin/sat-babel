@@ -32,6 +32,7 @@ def main
 
   n_days = get_days(data["start_date"], data["end_date"])
   n_hours = get_hours(data["start_time"], data["end_time"])
+  n_participants = data["participants"].length
 
   # Print parsed data
   puts "Tournament: #{data["tournament_name"]}"

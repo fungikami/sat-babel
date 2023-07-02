@@ -30,3 +30,57 @@ def get_hours(start_time, end_time)
 
   n_hours
 end
+
+
+def f(i, j, k, l)
+  # Para probar owo
+  n_participants = 30
+  n_days = 30
+  n_hours = 24
+
+  # Translate to 1-indexed by adding 1 (for DIMACS)
+  (n_hours - 1) * (n_days * (n_participants * i + j) + k) + l + 1
+end
+
+def f_inverse(n)
+  # Para probar awa
+  n_participants = 30
+  n_days = 30
+  n_hours = 24
+
+  # Translate to 0-indexed by subtracting 1 (from DIMACS)
+  n -= 1
+  l = n % (n_hours - 1)
+ 
+  n /= (n_hours - 1)
+  k = n % n_days
+
+  n /= n_days
+  j = n % n_participants
+
+  n /= n_participants
+  i = n
+
+  return i, j, k, l
+end
+
+def test_f
+  n_participants = 30
+  n_days = 30
+  n_hours = 24
+
+  for i in 0...n_participants
+    for j in 0...n_participants
+      for k in 0...n_days
+        for l in 0...(n_hours - 1)
+          # Verify that f_inverse(f(i, j, k, l)) == (i, j, k, l)
+          if  [i, j, k, l] != f_inverse(f(i, j, k, l))
+            return false
+          end
+        end
+      end
+    end
+  end
+
+  true
+end
