@@ -4,29 +4,25 @@ require_relative '../lib/utils'
 require_relative '../lib/constraints'
 
 def translate_to_cnf(n_participants, n_days, n_hours, filename)
-  # Initialize everything:
-  #
-  # The total number of variables
-  # The number of available hours (skip the last hour because there can't be a match then)
-  # Map from initial space to CNF space
   n_available_hours = n_hours - 1
   n_variables = n_participants**2 * n_days * n_available_hours
   map_to_cnf = create_map_to_cnf(n_participants, n_days, n_available_hours)
 
-  # Clauses list
   clauses = []
 
   args = [clauses, map_to_cnf, n_participants, n_days, n_available_hours]
 
-  # Add constraints
   add_constraint_1!(*args)
   add_constraint_2!(*args)
   add_constraint_3!(*args)
   add_constraint_4!(*args)
   add_constraint_5!(*args)
 
-  # Write to file
-  write_cnf_to_file(clauses, n_variables, "tmp/translation.cnf")
+  write_cnf_to_file(
+    clauses,
+    n_variables,
+    "tmp/#{File.basename(filename, File.extname(filename))}_translation.cnf"
+  )
 end
 
 def write_cnf_to_file(clauses, n_variables, filename)

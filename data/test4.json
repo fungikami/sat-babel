@@ -1,0 +1,12 @@
+{
+    "tournament_name": "La pelada del año",
+    "start_date": "2023-06-20",
+    "end_date": "2023-06-25",
+    "start_time": "13:00:00.000",
+    "end_time": "15:00:00.000",
+    "participants": [
+        "Kama",
+        "Chuwo",
+        "Wal"
+    ]
+}
