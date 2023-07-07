@@ -14,25 +14,7 @@ SAT es importante
 
 ## 2. Detalles de implementación
 
-### 2.0. Instrucciones de uso
 
-Para clonar el repositorio:
-
-```bash
-git clone --recursive https://github.com/fungikami/sat-babel.git
-```
-
-Luego, en la carpeta raíz del repositorio:
-
-```bash
-make
-```
-
-Para ejecutar el programa, navegar a la carpeta `sat-babel` y ejecutar:
-
-```bash
-bin/sat-babel <input-file> <output-file>
-```
 
 ### 2.1. Representación del problema
 
