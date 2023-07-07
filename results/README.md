@@ -113,7 +113,7 @@ Para un ijkl fijo:
 2n(h-1) cláusulas
 (
     -xijkl v -ipk+1q ^
-    -xijkl v -pj+1q ^
+    -xijkl v -pjk+1q ^
 ) ^ ...
 
 Son n(n-1)(d-1)(h-1) combinaciones de ijkl, por lo que el total de cláusulas es:

@@ -31,28 +31,52 @@ def get_hours(start_time, end_time)
   n_hours
 end
 
+# Creates a map from the initial space:
+#   n_participants x n_participants x n_days x n_available_hours
+# to the CNF space:
+#   Flattened to a single dimension and 1-indexed
+#
+# @param n_participants [Integer] the number of participants
+# @param n_days [Integer] the number of days
+# @param n_available_hours [Integer] the number of available hours
+# @return [Array] the map
+def create_map_to_cnf(n_participants, n_days, n_available_hours)
+  n = 1
+  map = []
 
-def f(i, j, k, l)
-  # Para probar owo
-  n_participants = 30
-  n_days = 30
-  n_hours = 24
+  for i in 0...n_participants
+    map[i] = []
+    for j in 0...n_participants
+      map[i][j] = []
+      for k in 0...n_days
+        map[i][j][k] = []
+        for l in 0...n_available_hours
+          map[i][j][k][l] = n
+          n += 1
+        end
+      end
+    end
+  end
 
-  # Translate to 1-indexed by adding 1 (for DIMACS)
-  (n_hours - 1) * (n_days * (n_participants * i + j) + k) + l + 1
+  map
 end
 
-def f_inverse(n)
-  # Para probar awa
-  n_participants = 30
-  n_days = 30
-  n_hours = 24
-
+# Maps from CNF space to the initial space back to the initial space
+# (see create_map_to_cnf)
+#
+# @param n [Integer] the number to map from CNF space
+# @param n_participants [Integer] the number of participants
+# @param n_days [Integer] the number of days
+# @param n_available_hours [Integer] the number of available hours
+# @return [Array] the mapped number
+def map_from_cnf(n, n_participants, n_days, n_available_hours)
   # Translate to 0-indexed by subtracting 1 (from DIMACS)
   n -= 1
-  l = n % (n_hours - 1)
- 
-  n /= (n_hours - 1)
+
+  # Get the indices
+  l = n % n_available_hours
+
+  n /= n_available_hours
   k = n % n_days
 
   n /= n_days
@@ -64,17 +88,28 @@ def f_inverse(n)
   return i, j, k, l
 end
 
-def test_f
-  n_participants = 30
-  n_days = 30
-  n_hours = 24
+# Test map from CNF space to the initial space and inverse
+#
+# @param n_participants [Integer] the number of participants
+# @param n_days [Integer] the number of days
+# @param n_available_hours [Integer] the number of available hours
+# @return [Boolean] true if the test passed, false otherwise
+def test_maps(n_participants, n_days, n_available_hours)
+
+  # Create the map
+  map_to_cnf = create_map_to_cnf(n_participants, n_days, n_available_hours)
 
   for i in 0...n_participants
     for j in 0...n_participants
       for k in 0...n_days
-        for l in 0...(n_hours - 1)
-          # Verify that f_inverse(f(i, j, k, l)) == (i, j, k, l)
-          if  [i, j, k, l] != f_inverse(f(i, j, k, l))
+        for l in 0...n_available_hours
+          # Verify that f^-1(f(v)) == v
+          if [i, j, k, l] != map_from_cnf(
+            map_to_cnf[i][j][k][l],
+            n_participants,
+            n_days,
+            n_available_hours
+          )
             return false
           end
         end
