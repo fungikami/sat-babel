@@ -14,15 +14,16 @@ SAT es importante
 
 ## 2. Detalles de implementación
 
-
-
 ### 2.1. Representación del problema
 
-$x_{ijkl}$: Variable que representa si el jugador $i$ juega local contra el jugador $j$ el día $k$ a la hora $l$.
+$x_{ijkl}$: Variable que representa si el jugador $i$ juega local contra el jugador $j$ el día $k$ a la hora $l$ (hora de inicio).
 
 $$x_{ijkl} \in \{\text{True}, \text{False}\}$$
+
 $$i,j \in [0..n), \; n \geq 2$$
+
 $$k \in [0..d), \; d\geq 2$$
+
 $$l \in [0..h-1), \; h \geq 2$$
 
 Número de variables: $n^2d(h-1)$
@@ -99,25 +100,7 @@ Son n(n-1)d(h-1) combinaciones de ijkl, por lo que el total de cláusulas es:
 4n^2(n-1)d(h-1)(h-2)
 -->
 
-<!-- IDEASss DE KA MAN
-
----
-
-$$(\forall i, j, k, l | i \neq j : x_{ijkl} \implies $$
-
-$$(\neg (\exists n, m | n \notin \{i, j\} :x_{inkm} \lor x_{njkm} \lor x_{jnkm} \lor x_{nikm})) \land (\neg (\exists m | m \neq l : x_{ijkm}) ) )$$
-
----
-
-Pa toda participante, participa en una hora o no participa en ninguna.
-$$(\forall i, j, k, l, m, o | i \neq j \land i \neq k \land m \neq o : (\neg(x_{ijlm}) \lor \neg(x_{iklo})) \land (\neg(x_{jilm}) \lor \neg(x_{kilo}))) \land $$
-
-Y pa todo participante, participa como local o como visitante, pero no como ambos.
-$$(\forall i, j, k, l, m, o | i \neq j \land i \neq k \land j \neq k \land m \neq o : (\neg(x_{ijlm}) \lor \neg(x_{ijlo})) ) $$
-
--->
-
-* Un participante no puede jugar de "visitante" en dos días consecutivos, ni de "local" dos días seguidos. $2n^2(n-1)(d-1)(h-1)^2$ cláusulas.
+* Un participante no puede jugar de local ni de visitante en dos días consecutivos. $2n^2(n-1)(d-1)(h-1)^2$ cláusulas.
 
 $$(\forall i, j, k, l | i \neq j \land k < d - 1 : x_{ijkl} \implies \neg (\exists p, q | :x_{ip(k+1)q} \lor x_{pj(k+1)q}))$$
 
@@ -139,24 +122,17 @@ Son n(n-1)(d-1)(h-1) combinaciones de ijkl, por lo que el total de cláusulas es
 
 -->
 
-
-<!-- IDEA DE KA MAN
-
-$$(\forall i, j, k, l, m, o | i \neq j \land i \neq k \land j \neq k : (\neg(x_{ijlm}) \lor \neg(x_{ik(l+1)o})) \land (\neg(x_{jilm}) \lor \neg(x_{ki(l+1)o}))) $$
-
--->
-
 * Todos los juegos deben empezar en horas "en punto" (por ejemplo, las 13:00:00 es una hora válida pero las 13:30:00 no).
 
-* Todos los juegos deben ocurrir entre una fecha inicial y una fecha final especificadas. Pueden ocurrir juegos en dichas fechas.
+* Todos los juegos deben ocurrir entre una fecha inicial y una fecha final especificadas.
 
-* Todos los juegos deben ocurrir entre un rango de horas especificado, el cuál será fijo para todos los días del torneo.
+* Todos los juegos deben ocurrir entre el rango de horas fijo especificado.
 
 La forma en que se modela el problema garantiza que todos los juegos empiezan en horas "en punto", ocurren entre una fecha inicial y una fecha final especificadas, y en un rango de horas especificado.
 
 * A efectos prácticos, todos los juegos tienen una duración de dos horas.
 
-Una restricción arriba garantiza que no hayan juegos que se traslapen en ninguna de las dos horas.
+Una restricción arriba garantiza que no hayan juegos que se solapen en ninguna de las dos horas.
 
 Así, el total de cláusulas está en el orden de $O(\max(n^3dh^2, n^4dh))$.
 

@@ -22,6 +22,10 @@ Para ejecutar el programa, navegar a la carpeta `sat-babel` y ejecutar:
 bin/sat-babel <input-file> <output-file>
 ```
 
+## Informe
+
+El informe se encuentra en la carpeta `results`.
+
 ---
 
 Made with :heart: by [Chus](https://www.github.com/chrischriscris) and [K](https://www.github.com/fungikami)
