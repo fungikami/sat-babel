@@ -14,33 +14,8 @@ require_relative "../lib/constraints"
 def translate_to_cnf(n_participants, n_days, n_hours, filename)
   n_available_hours = n_hours - 1
   n_variables = n_participants ** 2 * n_days * n_available_hours
-  map_to_cnf = create_map_to_cnf(n_participants, n_days, n_available_hours)
-
-  clauses = []
-
-  args = [clauses, map_to_cnf, n_participants, n_days, n_available_hours]
-
-  add_constraint_1!(*args)
-  add_constraint_2!(*args)
-  add_constraint_3!(*args)
-  add_constraint_4!(*args)
-  add_constraint_5!(*args)
-
-  translation_filename = "tmp/" \
-  "#{File.basename(filename, File.extname(filename))}_translation.cnf"
-
-  write_cnf_to_file(
-    clauses,
-    n_variables,
-    translation_filename
-  )
-
-  translation_filename
-end
-
-def write_cnf_to_file(clauses, n_variables, filename)
-  # Create the file if it doesn't exist
-  FileUtils.mkdir_p(File.dirname(filename))
+  n_clauses = calculate_number_of_clauses(n_participants, n_days, n_hours)
+  map_to_cnf = create_map_to_cnf(n_participants, n_days, n_hours)
 
   File.open(filename, "w") do |f|
     # Write header
@@ -49,13 +24,37 @@ def write_cnf_to_file(clauses, n_variables, filename)
     f.puts "c Chus, Ka (2023)"
     f.puts "c"
 
-    # Write clauses
-    f.puts "p cnf #{n_variables} #{clauses.size}"
+    f.puts "p cnf #{n_variables} #{n_clauses}"
 
-    until clauses.empty?
-      f.puts "#{clauses.pop.join(" ")} 0"
-    end
+    args = [f, map_to_cnf, n_participants, n_days, n_available_hours]
+
+    write_constraint_1!(*args)
+    write_constraint_2!(*args)
+    write_constraint_3!(*args)
+    write_constraint_4!(*args)
+    write_constraint_5!(*args)
   end
+
+  translation_filename = "tmp/" \
+  "#{File.basename(filename, File.extname(filename))}_translation.cnf"
+
+  translation_filename
+end
+
+# Calculates the number of clauses in the CNF translation.
+#
+# @param [Integer] n Number of participants
+# @param [Integer] d Number of days
+# @param [Integer] h Number of hours
+# @return [Integer] Number of clauses to be written
+def calculate_number_of_clauses(n, d, h)
+  n_constraint_1 = n*d*(h-1)
+  n_constraint_2 = n*(n-1)
+  n_constraint_3 = n*(n-1)*d*(n*(n-1)-1)*(2*h-3)
+  n_constraint_4 = 4*n**2 * (n-1)*d*(h-1)*(h-2)
+  n_constraint_5 = 2*n**2 * (n-1)*(d-1) * (h-1)**2
+
+  n_constraint_1 + n_constraint_2 + n_constraint_3 + n_constraint_4 + n_constraint_5
 end
 
 # Solves a SAT problem in CNF format using the minisat solver.

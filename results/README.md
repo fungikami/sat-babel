@@ -134,7 +134,7 @@ La forma en que se modela el problema garantiza que todos los juegos empiezan en
 
 Una restricción arriba garantiza que no hayan juegos que se solapen en ninguna de las dos horas.
 
-Así, el total de cláusulas está en el orden de $O(\max(n^3dh^2, n^4dh))$.
+Así, el total de cláusulas está en el orden de $O(n^3dh^2 + n^4dh)$.
 
 ### 2.2. Algoritmos de búsqueda
 
