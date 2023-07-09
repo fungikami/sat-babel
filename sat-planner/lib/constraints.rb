@@ -12,7 +12,7 @@ def write_constraint_1!(file, map, np, nd, nh)
   for i in 0...np
     for k in 0...nd
       for l in 0...nh
-        file.puts "#{-map[i][i][k][l]} 0\n"
+        file.puts "#{-map[i][i][k][l]} 0"
       end
     end
   end
@@ -36,11 +36,11 @@ def write_constraint_2!(file, map, np, nd, nh)
 
       for k in 0...nd
         for l in 0...nh
-          file.puts "#{map[i][j][k][l]} "
+          file.print "#{map[i][j][k][l]} "
         end
       end
 
-      file.puts "0\n"
+      file.puts "0"
     end
   end
 end
@@ -72,11 +72,11 @@ def write_constraint_3!(file, map, np, nd, nh)
             for v in 0...np
               next if (i == u && j == v) || (u == v)
               # Constraint 3.1
-              file.puts "#{not_x_ijkl} #{-map[u][v][k][l]} 0\n"
+              file.puts "#{not_x_ijkl} #{-map[u][v][k][l]} 0"
 
               # Constraint 3.2
               next if l >= nh - 1
-              file.puts "#{not_x_ijkl} #{-map[u][v][k][l + 1]} 0\n"
+              file.puts "#{not_x_ijkl} #{-map[u][v][k][l + 1]} 0"
             end
           end
         end
@@ -111,7 +111,7 @@ def write_constraint_4!(file, map, np, nd, nh)
               file.puts "#{not_x_ijkl} #{-map[i][_p][k][q]} 0\n" \
                 "#{not_x_ijkl} #{-map[_p][j][k][q]} 0\n" \
                 "#{not_x_ijkl} #{-map[j][_p][k][q]} 0\n" \
-                "#{not_x_ijkl} #{-map[_p][i][k][q]} 0\n"
+                "#{not_x_ijkl} #{-map[_p][i][k][q]} 0"
             end
           end
         end
@@ -130,7 +130,7 @@ end
 # @param np [Integer] the number of participants
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours
-def add_constraint_5!(file, map, np, nd, nh)
+def write_constraint_5!(file, map, np, nd, nh)
   for i in 0...np
     for j in 0...np
       next if i == j
@@ -144,7 +144,7 @@ def add_constraint_5!(file, map, np, nd, nh)
           for _p in 0...np
             for q in 0...nh
               file.puts "#{not_x_ijkl} #{-map[i][_p][k + 1][q]} 0\n" \
-                "#{not_x_ijkl} #{-map[_p][j][k + 1][q]} 0\n"
+                "#{not_x_ijkl} #{-map[_p][j][k + 1][q]} 0"
             end
           end
         end
