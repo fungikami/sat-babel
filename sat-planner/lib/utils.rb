@@ -1,4 +1,4 @@
-require 'time'
+require "time"
 
 # Get the number of days between two dates
 #

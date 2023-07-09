@@ -1,4 +1,4 @@
-# Add constraint 1 to the clauses list. 
+# Add constraint 1 to the clauses list.
 #
 # Constraint 1: No participant can play with themselves
 # (∀ i, k, l: -x_iikl)
@@ -18,7 +18,7 @@ def add_constraint_1!(clauses, map, np, nd, nh)
   end
 end
 
-# Add constraint 2 to the clauses list. 
+# Add constraint 2 to the clauses list.
 #
 # Constraint 2: All participants must play twice with each other, once as
 # visitors and once as locals
@@ -46,7 +46,7 @@ def add_constraint_2!(clauses, map, np, nd, nh)
   end
 end
 
-# Add constraint 3 to the clauses list. 
+# Add constraint 3 to the clauses list.
 #
 # Constraint 3: Two games can't occur at the same time
 # Constraint 3.1:
@@ -68,7 +68,7 @@ def add_constraint_3!(clauses, map, np, nd, nh)
       for k in 0...nd
         for l in 0...nh
           not_x_ijkl = -map[i][j][k][l]
-          
+
           for u in 0...np
             for v in 0...np
               next if (i == u && j == v) || (u == v)
@@ -77,7 +77,7 @@ def add_constraint_3!(clauses, map, np, nd, nh)
 
               # Constraint 3.2
               next if l >= nh - 1
-              clauses << [not_x_ijkl, -map[u][v][k][l+1]]
+              clauses << [not_x_ijkl, -map[u][v][k][l + 1]]
             end
           end
         end
@@ -100,7 +100,7 @@ def add_constraint_4!(clauses, map, np, nd, nh)
   for i in 0...np
     for j in 0...np
       next if i == j
-    
+
       for k in 0...nd
         for l in 0...nh
           not_x_ijkl = -map[i][j][k][l]
@@ -144,8 +144,8 @@ def add_constraint_5!(clauses, map, np, nd, nh)
 
           for _p in 0...np
             for q in 0...nh
-              clauses << [not_x_ijkl, -map[i][_p][k+1][q]]
-              clauses << [not_x_ijkl, -map[_p][j][k+1][q]]
+              clauses << [not_x_ijkl, -map[i][_p][k + 1][q]]
+              clauses << [not_x_ijkl, -map[_p][j][k + 1][q]]
             end
           end
         end

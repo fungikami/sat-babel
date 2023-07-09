@@ -43,12 +43,11 @@ def main
   # TODO: Ver cuántas horas se necesitan para que por lo menos sea satisfacible,
   # y si no, reportar insatisfacible
 
-  translate_to_cnf(n_participants, n_days, n_hours, filename)
+  cnf_filename = translate_to_cnf(n_participants, n_days, n_hours, filename)
+  solution_filename = solve_cnf(cnf_filename, "#{__dir__}/glucose")
 
 =begin
   Layout:
-
-  solve_cnf(input_filename, output_filename)
   translate_to_ics(output_filename)
 
   puts "Done! Check your calendar."
