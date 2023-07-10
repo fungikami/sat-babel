@@ -11,6 +11,7 @@
 /tmp/
 ****/tmp/
 ****glucose
+****glucose-syrup
 
 # Used by dotenv library to load environment variables.
 # .env

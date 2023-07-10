@@ -44,7 +44,7 @@ def main
   # y si no, reportar insatisfacible
 
   cnf_filename = translate_to_cnf(n_participants, n_days, n_hours, filename)
-  solution_filename = solve_cnf(cnf_filename, "glucose")
+  solution_filename = solve_cnf(cnf_filename, "glucose-syrup")
 
 =begin
   Layout:
