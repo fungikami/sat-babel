@@ -20,6 +20,9 @@ def translate_to_cnf(n_participants, n_days, n_hours, filename)
   translation_filename = "tmp/" \
     "#{File.basename(filename, File.extname(filename))}_translation.cnf"
 
+  # Creates the directory if it doesn't exist
+  FileUtils.mkdir_p("tmp")
+
   File.open(translation_filename, "w") do |f|
     # Write header
     f.puts "c FILE: #{filename}"
