@@ -1,4 +1,4 @@
-# sat-babel
+# sat-planner
 
 This is a translation of a scheduling problem written in Ruby.
 
@@ -15,7 +15,7 @@ The solution is a SAT encoding of the problem. The encoding is written in Ruby a
 The program is written in Ruby and requires Ruby 3.2.2 or later. It is run from the command line as follows:
 
 ```
-./bin/sat-babel input-file output-file
+./bin/sat-planner input-file output-file
 ```
 
 The input file is a text file that describes the problem. The output file is a text file that contains the SAT encoding of the problem in DIMACS CNF format.

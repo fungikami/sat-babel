@@ -7,7 +7,7 @@ Tu planeador favorito de torneos de ajedrez.
 Para clonar el repositorio:
 
 ```bash
-git clone --recursive https://github.com/fungikami/sat-babel.git
+git clone --recursive https://github.com/fungikami/sat-planner.git
 ```
 
 Luego, en la carpeta raíz del repositorio:
@@ -16,10 +16,10 @@ Luego, en la carpeta raíz del repositorio:
 make
 ```
 
-Para ejecutar el programa, navegar a la carpeta `sat-babel` y ejecutar:
+Para ejecutar el programa, navegar a la carpeta `sat-planner` y ejecutar:
 
 ```bash
-bin/sat-babel <input-file> <output-file>
+bin/sat-planner <input-file> <output-file>
 ```
 
 ## Informe
