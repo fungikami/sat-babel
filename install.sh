@@ -7,6 +7,16 @@ make >> /dev/null
 
 # Verifies if the make command was successful
 if [ $? -eq 0 ]; then
+    cd sat-planner && bundle install >> /dev/null
+
+    # Verifies if the bundle install command was successful
+    if [ $? -eq 0 ]; then
+        cd ..
+    else
+        echo "Error installing dependencies"
+        return 1
+    fi
+
     echo "Dependencies installed"
 else
     echo "Error installing dependencies"

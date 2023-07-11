@@ -1,4 +1,5 @@
 require "time"
+require 'icalendar'
 
 # Get the number of days between two dates
 #
@@ -120,26 +121,90 @@ def test_maps(n_participants, n_days, n_available_hours)
   true
 end
 
-# Given a SAT solution file, extract only positive literals
+# Extract solution from a solution file
 #
-# @param filename [String] the name of the file
-# @return [Array] the positive literals
-def extract_positive_literals(filename)
-  literals = []
+# @param solution_filename [String] the name of the solution file
+# @param n_participants [Integer] the number of participants
+# @param n_days [Integer] the number of days
+# @param n_hours [Integer] the number of hours
+# @return [Array] the solution
+def extract_solution(solution_filename, n_participants, n_days, n_hours)
+  File.open(solution_filename, "r") do |f|
+    solution_string = f.readline.strip
 
-  File.open(filename, "r") do |file|
-    file.each_line do |line|
-      # Print the line
-      puts "Line: #{line}"
-      # Ignore comments
-      if line[0] != "c"
-        # Get the literals
-        literals = line.split(" ")
-        puts "Found #{literals.length} positive literals"
-        break
-      end
+    if solution_string == "UNSAT"
+      return []
+    end
+
+    solution_string.split(" ")
+      .map(&:to_i)
+      .select { |x| x > 0 }
+      .map { |x| map_from_cnf(x, n_participants, n_days, n_hours - 1) }
+  end
+end
+
+# Create .ics file from solution
+#
+# @param solution [Array] the solution
+# @param 
+# @return [String] the .ics file
+def create_ics(
+  solution,
+  tournament_name,
+  participants,
+  start_date,
+  start_time,
+  filename
+)
+  # Parse start date and time
+  start_date = Date.parse(start_date)
+  start_time = Time.parse(start_time)
+
+  # Round time if min > 0, add to start date to get the next o'clock
+  if start_time.min > 0 || start_time.sec > 0
+    start_time = Time.parse("#{start_time.hour + 1}:00:00")
+  end
+
+  # Create a new time object with the rounded time
+  
+  # Create the calendar
+  cal = Icalendar::Calendar.new
+
+  for game in solution
+    # Create the event
+    cal.event do |e|
+      player1, player2, day, hour = game
+      game_date = start_date + day
+      game_hour = start_time.hour + hour
+
+      e.dtstart = DateTime.new(
+        game_date.year,
+        game_date.month,
+        game_date.day,
+        game_hour
+      )
+
+      e.dtend = DateTime.new(
+        game_date.year,
+        game_date.month,
+        game_date.day,
+        game_hour + 2
+      )
+
+      e.summary = "#{tournament_name}: #{participants[player1]} vs #{participants[player2]}"
+      e.description =<<~DESCRIPTION
+      On #{game_date.strftime("%A, %B %d, %Y")}, from #{game_hour}:00 to #{game_hour + 2}:00,
+      #{participants[player1]} will play against #{participants[player2]}.
+
+      - #{participants[player1]} play as local
+      - #{participants[player2]} play as visitor
+
+      May the best win!
+      DESCRIPTION
     end
   end
 
-  literals
+  File.open(filename, "w") do |f|
+    f.write(cal.to_ical)
+  end
 end
