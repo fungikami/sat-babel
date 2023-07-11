@@ -3,7 +3,7 @@
 require 'json'
 require "fileutils"
 require_relative '../lib/utils'
-require_relative '../lib/transpiler'
+require_relative '../lib/translator'
 
 # Entry point for sat-planner
 def main

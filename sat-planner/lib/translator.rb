@@ -94,6 +94,9 @@ def solve_cnf(filename, bin_path)
     # Ctrl-C to stop the process
   rescue Interrupt
     puts "\rInterrupted! 🤬#{" " * 44}\n\n"
+
+    # Kill the child process
+    Process.kill("TERM", pid)
     exit 1
   end
 

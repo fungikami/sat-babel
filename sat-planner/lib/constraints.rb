@@ -122,7 +122,7 @@ end
 
 # Write constraint 5 to the given file.
 #
-# # Constraint 5: A participant can't play on two consecutive days
+# Constraint 5: A participant can't play on two consecutive days
 # (∀ i, j, k, l | i != j ^ k < d - 1 : x_ijkl => -(∃ p, q | :x_ip(k+1)q v x_pj(k+1)q))
 #
 # @param file [File] the file to write the constraint to
