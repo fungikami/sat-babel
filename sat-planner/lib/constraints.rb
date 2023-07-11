@@ -109,9 +109,9 @@ def write_constraint_4!(file, map, np, nd, nh)
               next if q == l
 
               file.puts "#{not_x_ijkl} #{-map[i][_p][k][q]} 0\n" \
-                "#{not_x_ijkl} #{-map[_p][j][k][q]} 0\n" \
-                "#{not_x_ijkl} #{-map[j][_p][k][q]} 0\n" \
-                "#{not_x_ijkl} #{-map[_p][i][k][q]} 0"
+                        "#{not_x_ijkl} #{-map[_p][j][k][q]} 0\n" \
+                        "#{not_x_ijkl} #{-map[j][_p][k][q]} 0\n" \
+                        "#{not_x_ijkl} #{-map[_p][i][k][q]} 0"
             end
           end
         end
@@ -144,7 +144,7 @@ def write_constraint_5!(file, map, np, nd, nh)
           for _p in 0...np
             for q in 0...nh
               file.puts "#{not_x_ijkl} #{-map[i][_p][k + 1][q]} 0\n" \
-                "#{not_x_ijkl} #{-map[_p][j][k + 1][q]} 0"
+                        "#{not_x_ijkl} #{-map[_p][j][k + 1][q]} 0"
             end
           end
         end

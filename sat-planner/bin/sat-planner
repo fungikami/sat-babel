@@ -21,6 +21,7 @@ def main
   # Parse JSON file provided as argument, handle errors
   begin
     file = File.read(filename)
+    data = JSON.parse(file)
   rescue Errno::ENOENT => e
     puts "#{bin_name}: #{filename}: No such file"
     exit 1
@@ -29,44 +30,59 @@ def main
     exit 1
   end
 
-  data = JSON.parse(file)
-
   tournament_name = data["tournament_name"]
   n_participants = data["participants"].length
   n_days = get_days(data["start_date"], data["end_date"])
   n_hours = get_hours(data["start_time"], data["end_time"])
 
   # Print parsed data
-  puts "Tournament: #{tournament_name}"
-  puts "Participants: #{data["participants"].join(", ")}"
-  puts "Days: #{n_days}"
-  puts "Hours: #{n_hours}"
+  puts "Generating a schedule for the tournament '#{tournament_name}'"
+  puts "  - Participants: #{data["participants"].join(", ")}"
+  puts "  - To be played in #{n_days} days"
+  puts "  - Among #{n_hours} hours of the day\n\n"
 
-  # TODO: Ver cuántas horas se necesitan para que por lo menos sea satisfacible,
-  # y si no, reportar insatisfacible
+  if !makes_sense?(n_participants, n_days, n_hours)
+    puts "The tournament you just planned doesn't even make sense, go to sleep 🦆"
+    exit 0
+  end
+
+  thr = Thread.new do
+    cnf_filename = translate_to_cnf(n_participants, n_days, n_hours, filename)
+  end
+
+  # While wait for the thread to finish, show a spinner
+  begin
+    while thr.alive? do
+      for i in 0..3 do
+        print "\rWait while we're explaining your tournament to the computer 🥬#{'.' * i}#{' ' * (3 - i)}"
+        sleep 0.3
+      end
+    end
+  rescue Interrupt
+    puts "\rInterrupted! 🤬#{" " * 112}\n\n"
+    exit 1
+  end
+  puts "\rUnderstanding complete! 💅#{" " * 100}\n\n"
 
   cnf_filename = translate_to_cnf(n_participants, n_days, n_hours, filename)
   solution_filename = solve_cnf(cnf_filename, "glucose")
 
-  # Extract and map solution from file
   solution = extract_solution(solution_filename, n_participants, n_days, n_hours)
   if solution.empty?
-    puts "No solution found"
+    puts "A schedule for this tournament isn't possible, plan something else 🦧"
     exit 0
   end
 
   # Create .ics file from solution
-  output_filename = "#{tournament_name}.ics"
-  ics = create_ics(
+  output_filename = create_ics(
     solution,
     data["tournament_name"],
     data["participants"],
     data["start_date"],
-    data["start_time"],
-    output_filename
+    data["start_time"]
   )
 
-  puts "Done! You can check your calendar at #{output_filename}, have fun!"
+  puts "Done! You can check your calendar at '#{output_filename}', have fun 📵"
 end
 
 main if __FILE__ == $0

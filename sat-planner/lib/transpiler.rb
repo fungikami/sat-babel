@@ -18,7 +18,7 @@ def translate_to_cnf(n_participants, n_days, n_hours, filename)
   map_to_cnf = create_map_to_cnf(n_participants, n_days, n_available_hours)
 
   translation_filename = "tmp/" \
-    "#{File.basename(filename, File.extname(filename))}_translation.cnf"
+  "#{File.basename(filename, File.extname(filename))}_translation.cnf"
 
   # Creates the directory if it doesn't exist
   FileUtils.mkdir_p("tmp")
@@ -51,11 +51,11 @@ end
 # @param [Integer] h Number of hours
 # @return [Integer] Number of clauses to be written
 def calculate_number_of_clauses(n, d, h)
-  n_constraint_1 = n*d*(h-1)
-  n_constraint_2 = n*(n-1)
-  n_constraint_3 = n*(n-1)*d*(n*(n-1)-1)*(2*h-3)
-  n_constraint_4 = 4*n**2 * (n-1)*d*(h-1)*(h-2)
-  n_constraint_5 = 2*n**2 * (n-1)*(d-1) * (h-1)**2
+  n_constraint_1 = n * d * (h - 1)
+  n_constraint_2 = n * (n - 1)
+  n_constraint_3 = n * (n - 1) * d * (n * (n - 1) - 1) * (2 * h - 3)
+  n_constraint_4 = 4 * n ** 2 * (n - 1) * d * (h - 1) * (h - 2)
+  n_constraint_5 = 2 * n ** 2 * (n - 1) * (d - 1) * (h - 1) ** 2
 
   n_constraint_1 + n_constraint_2 + n_constraint_3 + n_constraint_4 + n_constraint_5
 end
@@ -69,28 +69,32 @@ def solve_cnf(filename, bin_path)
   solution_filename = "tmp/" \
   "#{File.basename(filename, File.extname(filename))}_solution.cnf"
 
-  # Run minisat and discard output (only interested in the solution file)
-  # `#{bin_path} #{filename} #{solution_filename} > /dev/null`
-  
-  # Run in background to avoid blocking (another way to do it)
+  # Run in background to avoid blocking
   pid = spawn("#{bin_path} #{filename} #{solution_filename}", out: "/dev/null")
   Process.detach(pid)
 
   # Wait for the child process to exit and retrieve its exit status
-  loop do
-    # Check if the child process has exited
-    begin
-      status = Process.waitpid2(pid, Process::WNOHANG)
-    rescue Errno::ECHILD
-      # Child process has exited, do something
-      puts "\rScheduled!     "
-      break
+  begin
+    loop do
+      # Check if the child process has exited
+      begin
+        status = Process.waitpid2(pid, Process::WNOHANG)
+      rescue Errno::ECHILD
+        # Child process has exited, do something
+        puts "\rWe're finished! 🦛#{" " * 36}\n\n"
+        break
+      end
+
+      # Child process is still running
+      for char in ["—", "\\", "|", "/"]
+        print "\rPlease wait we're attempting to schedule 🍳... #{char}"
+        sleep 0.1
+      end
     end
-    # Child process is still running
-    for char in ["—", "\\", "|", "/"]
-      print "\rScheduling... #{char}"
-      sleep 0.1
-    end
+    # Ctrl-C to stop the process
+  rescue Interrupt
+    puts "\rInterrupted! 🤬#{" " * 44}\n\n"
+    exit 1
   end
 
   solution_filename
