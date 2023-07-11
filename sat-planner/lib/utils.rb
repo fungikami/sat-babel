@@ -119,3 +119,27 @@ def test_maps(n_participants, n_days, n_available_hours)
 
   true
 end
+
+# Given a SAT solution file, extract only positive literals
+#
+# @param filename [String] the name of the file
+# @return [Array] the positive literals
+def extract_positive_literals(filename)
+  literals = []
+
+  File.open(filename, "r") do |file|
+    file.each_line do |line|
+      # Print the line
+      puts "Line: #{line}"
+      # Ignore comments
+      if line[0] != "c"
+        # Get the literals
+        literals = line.split(" ")
+        puts "Found #{literals.length} positive literals"
+        break
+      end
+    end
+  end
+
+  literals
+end
