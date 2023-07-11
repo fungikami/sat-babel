@@ -23,7 +23,7 @@ Si hay algún problema con la instalación, pruebe a clonar nuevamente el reposi
 Una vez instalado el programa, se puede ejecutar desde cualquier directorio mientras se esté en la misma sesión de terminal:
 
 ```bash
-sat-planner input_file output_file
+sat-planner input_file
 ```
 
 ## Informe
