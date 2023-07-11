@@ -9,7 +9,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  icalendar
+  icalendar (~> 2.8)
 
 BUNDLED WITH
    2.4.10
