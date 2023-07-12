@@ -70,6 +70,7 @@ def solve_cnf(filename, bin_path)
   "#{File.basename(filename, File.extname(filename))}_solution.cnf"
 
   # Run in background to avoid blocking
+  t_start = Time.now
   pid = spawn("#{bin_path} #{filename} #{solution_filename}", out: "/dev/null")
   Process.detach(pid)
 
@@ -81,7 +82,7 @@ def solve_cnf(filename, bin_path)
         status = Process.waitpid2(pid, Process::WNOHANG)
       rescue Errno::ECHILD
         # Child process has exited, do something
-        puts "\rWe're finished! 🦛#{" " * 36}\n\n"
+        puts "\rWe're finished in #{Time.now - t_start} seconds! 🦛#{' ' * 8}\n\n"
         break
       end
 

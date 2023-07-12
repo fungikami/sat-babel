@@ -121,6 +121,16 @@ def test_maps(n_participants, n_days, n_available_hours)
   true
 end
 
+# Measure the time it takes to execute a block
+#
+# @param block [Block] the block to measure
+# @return [Float] the time it took to execute the block
+def measure_time(&block)
+  start = Time.now
+  block.call
+  Time.now - start
+end
+
 # Check if a tournament is plausible given its parameters
 #
 # @param n_participants [Integer] the number of participants
@@ -203,7 +213,7 @@ def create_ics(solution, tournament_name, participants, start_date, start_time)
 
       e.summary = "#{tournament_name}: #{participants[player1]} vs #{participants[player2]}"
       e.description = <<~DESCRIPTION
-                      On #{game_date.strftime("%A, %B %d, %Y")}, from #{game_hour}:00 to #{game_hour + 2}:00,
+                                    On #{game_date.strftime("%A, %B %d, %Y")}, from #{game_hour}:00 to #{game_hour + 2}:00,
       #{participants[player1]} will play against #{participants[player2]}.
 
       - #{participants[player1]} play as local

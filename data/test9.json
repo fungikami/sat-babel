@@ -1,0 +1,19 @@
+{
+    "tournament_name": "El afortunado",
+    "start_date": "2023-01-01",
+    "end_date": "2023-02-19",
+    "start_time": "02:00:00.000",
+    "end_time": "08:00:00.000",
+    "participants": [
+        "Juan",
+        "Pedro",
+        "Pablo",
+        "Jose",
+        "Luis",
+        "Carlos",
+        "Jorge",
+        "Raul",
+        "Ricardo",
+        "Roberto"
+    ]
+}

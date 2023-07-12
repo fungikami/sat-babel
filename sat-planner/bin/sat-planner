@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'json'
+require "json"
 require "fileutils"
-require_relative '../lib/utils'
-require_relative '../lib/translator'
+require_relative "../lib/utils"
+require_relative "../lib/translator"
 
 # Entry point for sat-planner
 def main
@@ -37,7 +37,7 @@ def main
 
   # Print parsed data
   puts "Generating a schedule for the tournament '#{tournament_name}'"
-  puts "  - Participants: #{data["participants"].join(", ")}"
+  puts "  - #{n_participants} participants: #{data["participants"].join(", ")}"
   puts "  - To be played in #{n_days} days"
   puts "  - Among #{n_hours} hours of the day\n\n"
 
@@ -46,25 +46,28 @@ def main
     exit 0
   end
 
+  cnf_filename = ""
+  t_translation = 0
   thr = Thread.new do
-    cnf_filename = translate_to_cnf(n_participants, n_days, n_hours, filename)
+    t_translation = measure_time {
+      cnf_filename = translate_to_cnf(n_participants, n_days, n_hours, filename)
+    }
   end
 
-  # While wait for the thread to finish, show a spinner
+  # While wait for the thread to finish, show a loading animation
   begin
-    while thr.alive? do
-      for i in 0..3 do
-        print "\rWait while we're explaining your tournament to the computer 🥬#{'.' * i}#{' ' * (3 - i)}"
+    while thr.alive?
+      for i in 0..3
+        print "\rWait while we're explaining your tournament to the computer 🥬#{"." * i}#{" " * (3 - i)}"
         sleep 0.3
       end
     end
   rescue Interrupt
-    puts "\rInterrupted! 🤬#{" " * 112}\n\n"
+    puts "\rInterrupted! 🤬#{" " * 112}"
     exit 1
   end
-  puts "\rUnderstanding complete! 💅#{" " * 100}\n\n"
-
-  cnf_filename = translate_to_cnf(n_participants, n_days, n_hours, filename)
+  puts "\rUnderstanding complete in #{t_translation} seconds! 💅#{" " * 20}\n\n"
+  
   solution_filename = solve_cnf(cnf_filename, "glucose")
 
   solution = extract_solution(solution_filename, n_participants, n_days, n_hours)
@@ -74,15 +77,18 @@ def main
   end
 
   # Create .ics file from solution
-  output_filename = create_ics(
-    solution,
-    data["tournament_name"],
-    data["participants"],
-    data["start_date"],
-    data["start_time"]
-  )
+  output_filename = ""
+  t_ics = measure_time {
+    output_filename = create_ics(
+      solution,
+      data["tournament_name"],
+      data["participants"],
+      data["start_date"],
+      data["start_time"]
+    )
+  }
 
-  puts "Done! You can check your calendar at '#{output_filename}', have fun 📵"
+  puts "Calendar generated in #{t_ics} seconds! You can check your calendar at '#{output_filename}', have fun 📵"
 end
 
 main if __FILE__ == $0
