@@ -12,7 +12,7 @@ def write_constraint_1!(file, map, np, nd, nh)
   for i in 0...np
     for k in 0...nd
       for l in 0...nh
-        file.puts "#{-map[i][i][k][l]} 0"
+        file.puts "#{-map.(i, i, k, l)} 0"
       end
     end
   end
@@ -36,7 +36,7 @@ def write_constraint_2!(file, map, np, nd, nh)
 
       for k in 0...nd
         for l in 0...nh
-          file.print "#{map[i][j][k][l]} "
+          file.print "#{map.(i, j, k, l)} "
         end
       end
 
@@ -66,17 +66,17 @@ def write_constraint_3!(file, map, np, nd, nh)
 
       for k in 0...nd
         for l in 0...nh
-          not_x_ijkl = -map[i][j][k][l]
+          not_x_ijkl = -map.(i, j, k, l)
 
           for u in 0...np
             for v in 0...np
               next if (i == u && j == v) || (u == v)
               # Constraint 3.1
-              file.puts "#{not_x_ijkl} #{-map[u][v][k][l]} 0"
+              file.puts "#{not_x_ijkl} #{-map.(u, v, k, l)} 0"
 
               # Constraint 3.2
               next if l >= nh - 1
-              file.puts "#{not_x_ijkl} #{-map[u][v][k][l + 1]} 0"
+              file.puts "#{not_x_ijkl} #{-map.(u, v, k, l + 1)} 0"
             end
           end
         end
@@ -102,16 +102,16 @@ def write_constraint_4!(file, map, np, nd, nh)
 
       for k in 0...nd
         for l in 0...nh
-          not_x_ijkl = -map[i][j][k][l]
+          not_x_ijkl = -map.(i, j, k, l)
 
           for _p in 0...np
             for q in 0...nh
               next if q == l
 
-              file.puts "#{not_x_ijkl} #{-map[i][_p][k][q]} 0\n" \
-                        "#{not_x_ijkl} #{-map[_p][j][k][q]} 0\n" \
-                        "#{not_x_ijkl} #{-map[j][_p][k][q]} 0\n" \
-                        "#{not_x_ijkl} #{-map[_p][i][k][q]} 0"
+              file.puts "#{not_x_ijkl} #{-map.(i, _p, k, q)} 0\n" \
+                        "#{not_x_ijkl} #{-map.(_p, j, k, q)} 0\n" \
+                        "#{not_x_ijkl} #{-map.(j, _p, k, q)} 0\n" \
+                        "#{not_x_ijkl} #{-map.(_p, i, k, q)} 0"
             end
           end
         end
@@ -139,12 +139,12 @@ def write_constraint_5!(file, map, np, nd, nh)
         next if k >= nd - 1
 
         for l in 0...nh
-          not_x_ijkl = -map[i][j][k][l]
+          not_x_ijkl = -map.(i, j, k, l)
 
           for _p in 0...np
             for q in 0...nh
-              file.puts "#{not_x_ijkl} #{-map[i][_p][k + 1][q]} 0\n" \
-                        "#{not_x_ijkl} #{-map[_p][j][k + 1][q]} 0"
+              file.puts "#{not_x_ijkl} #{-map.(i, _p, k + 1, q)} 0\n" \
+                        "#{not_x_ijkl} #{-map.(_p, j, k + 1, q)} 0"
             end
           end
         end
