@@ -144,10 +144,29 @@ Una restricción arriba garantiza que no hayan juegos que se solapen en ninguna 
 
 Así, el total de cláusulas está en el orden de $O(n^3dh^2 + n^4dh)$.
 
-### 2.2. Algoritmos de búsqueda
+### 2.2 Traducción del problema en formato JSON a formato DIMACS
+
+Para realizar el programa se utilizó el lenguaje de programación Ruby, en su versión 3.2.2. 
+
+En particular, se observó una diferencia significativa en el rendimiento al comparar dos casos: el primero consistió en generar todas las cláusulas en memoria y luego escribirlas en el archivo DIMACS, mientras que el segundo implicó generar y escribir las cláusulas en el archivo de forma simultánea a medida que se iban generando. Por ejemplo, con un caso de 10 participantes, 18 días y 20 horas (`../data/test0.json`), se observó que el primer caso tomaba en promedio 114 segundos para generar el archivo, con claúsulas. Mientras que, con el segundo caso, el tiempo promedio de generación del archivo era de 15.5 segundos. Por ello, se optó por la segunda opción para la generación de los archivos DIMACS.
+
+Asimismo, en un principio, se observó que al emplear un set para almacenar las cláusulas...
 
 
-### 2.3. Evaluación de los algoritmos
+### 2.3 Glucose Solver
+
+Tras la traducción del problema en un caso de SAT, se procedió a ejecutar el programa `glucose`, en su versión 4.2.1, para resolver el problema. 
+
+Se observó que `glucose-syrup` es más rápido que `glucose`, sin embargo...
+
+
+
+### 2.4 iCalendar
+
+Luego, se procedió a generar el archivo iCalendar a partir de la solución obtenida por `glucose`, en caso de ser satisfacible. Para ello, se utilizó la gema `icalendar`, en su versión 2.8. En dicho archivo se incluyó la información de los partidos, así como la información de los equipos, ya sea local o visitante. 
+
+Se observó que el horario puede presentar inconsistencias según la aplicación de calendario utilizada. Se probó las soluciones obtenidas en `Google Calendar`, `Calendar` (aplicación de Huawei) y `GNOME Calendar` (aplicación de Linux). En el último caso se observó que los horarios se encontraban desfasados en cuatro horas.
+
 
 
 ## 3. Resultados experimentales
@@ -157,11 +176,18 @@ Para la ejecución de los algoritmos se utilizó un computador con las siguiente
 
 - **Procesador**: Intel i5-1035G1 (8) @ 3.600GHz.
 - **Memoria RAM**: 7689MiB.
+- **Almacenamiento**: SSD M.2, Max Sequential Write 1000MB/s.
 - **Sistema operativo**: Pop!_OS 22.04 LTS x86_64.
 
+### 3.2 Casos de prueba
+
+Se crearon `TANTOS` casos de prueba, fáciles y difíciles, para probar el correcto funcionamiento del programa. Los casos de prueba se encuentran en la carpeta `data`.
 
 
-### 3.2 Ejecuciones
+### 3.3 Ejecuciones
+
+| # Equipos | # Días | # Horas | # Partidos | # Cláusulas | Tiempo (s) |
+| --------- | ------ | ------- | ---------- | ----------- | ---------- |
 
 
 ## 4. Conclusiones

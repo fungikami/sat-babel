@@ -1,0 +1,8 @@
+{
+    "tournament_name": "Nombretorneo",
+    "start_date": "2023-11-01",
+    "end_date": "2023-12-10",
+    "start_time": "07:00:00",
+    "end_time": "19:00:00",
+    "participants": ["A", "B", "C", "D", "E", "F", "G", "H","I","J","K","L","M","N"]
+}

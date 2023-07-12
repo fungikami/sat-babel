@@ -20,7 +20,7 @@ source install.sh
 
 Si hay algún problema con la instalación, pruebe a clonar nuevamente el repositorio en un directorio distinto. Asegúrese de que la nueva ubicación no tenga espacios en el nombre, debido a que un submódulo de la instalación no funciona correctamente en ubicaciones con espacios en el nombre.
 
-Otro error común es que `ka no quiere explicar cómo se resuelve el problema`.
+Otro error que puede suceder durante la instalación, es la falta de permisos para instalar las dependencias de `ruby` en la raíz del sistema. Para evitar esto, se recomienda usar un manejador de versiones como `RVM` o `rbenv`, para instalar `ruby` en un directorio local.
 
 ## Uso
 
