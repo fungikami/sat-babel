@@ -169,7 +169,7 @@ ii.a. Escribir las cláusulas secuencialmente en el archivo.
 ii.b. Escribir las cláusulas de forma paralela en el archivo, ya que el orden de las cláusulas no importa.
 ii.c. Escribir cada una de las 5 restricciones en archivos distintos paralelamente y pasar al solver una concatenación in-place de los archivos.
 
-De cada una de estas opciones consideradas, luego de hacer pruebas de rendimiento (principalmente con casos de prueba grandes, de decenas de millones de cláusulas), se observó que la opción (ii.b) era la más eficiente, por lo que es la que se utilizó en el programa final. Algunas notas interesantes de esta consideraciones fueron los siguientes:
+De cada una de estas opciones consideradas, luego de hacer pruebas de rendimiento (principalmente con casos de prueba grandes, de decenas de millones de cláusulas), se observó que la opción (ii.a) era la más eficiente, por lo que es la que se utilizó en el programa final. Algunas notas interesantes de esta consideraciones fueron los siguientes:
 
 + La primera implementación considerada fue la (i.a), pero surgía el problema de que el gasto de memoria llegaba a ser alto para instancias relativamente grandes (de más de 700MB), y la preocupación era la del crecimiento vertiginoso de la memoria a medida que se aumentaba el número de participantes, días y horas (asintóticamente equivalente a $O(n^3dh^2 + n^4dh)$ como se refiere arriba).
 
@@ -197,7 +197,7 @@ $$f^-1(x) = (x \div (nd(h - 1)), (x \div (d(h - 1))) \mod n, (x \div (h - 1)) \m
 
 sin embargo, dado que se al generar las restricciones se itera numerosas veces sobre $[0..n) \times [0..n) \times [0..d) \times [0..h-1)$, se decidió utilizar un arreglo de cuatro dimensiones para mapear las variables del modelado a las variables del formato DIMACS, por su sencillez y mejor eficiencia que la función $f$ (aunque la diferencia es despreciable, pues la función $f$ es $O(1)$).
 
-Si bien el gasto de memoria usando el mapa no es constante como es deseable, es muy pequeño en comparación con el gasto de memoria de las cláusulas, por lo que no se consideró un problema. En una instancia de 26 participantes, 121 días y 23 horas (`data/test14.json`) el número de variables es alrededor de 1 millón 800 mil y el gasto de memoria no supera todavía los 80MB (el ejecutable por sí solo gasta alrededor de 30MB), siendo este un caso que difícilmente se llegue a presentar en la práctica, pues el número de cláusulas es de casi 8 mil millones.
+Si bien el gasto de memoria usando el mapa no es constante como es deseable, es muy pequeño en comparación con el gasto de memoria de las cláusulas, por lo que no se consideró un problema. En una instancia de 26 participantes, 121 días y 23 horas (`data/test12.json`) el número de variables es alrededor de 1 millón 800 mil y el gasto de memoria no supera todavía los 80MB (el ejecutable por sí solo gasta alrededor de 30MB), siendo este un caso que difícilmente se llegue a presentar en la práctica, pues el número de cláusulas es de casi 8 mil millones.
 
 Luego, como el mapa inverso no se recorre varias veces y solo se necesitan unos cuantos valores para traducir la solución de `glucose`, se prescindió de precalcular el mapa y se implementó directamente la función $f^-1$.
 
@@ -207,13 +207,21 @@ Tras la traducción del problema en un caso de SAT, se procedió a ejecutar el p
 
 Se observó que `glucose-syrup` es más rápido que `glucose`, pues se trata de una implementación que se aprovecha del paralelismo y utiliza múltiples núcleos de la CPU para resolver el problema (llegando a ser hasta 2 veces más rápido que `glucose` en algunos casos), sin embargo, no se utilizó porque la implementación, probablemente por algún bug, genera un archivo de salida vacío, a pesar de efectivamente encontrar una solución.
 
-`glucose`
-
 ### 2.4 iCalendar
 
 Luego, se procedió a generar el archivo iCalendar a partir de la solución obtenida por `glucose`, en el que se incluye la información de los partidos como eventos en un formato agradable, así como la información de los equipos, ya sea local o visitante.
 
 Se observó que el horario puede presentar inconsistencias según la aplicación de calendario utilizada. Las soluciones obtenidas se importaron a `Google Calendar`, `Calendar` (aplicación de Huawei) y `GNOME Calendar`, y en este último caso se observó que los horarios se encontraban desfasados en cuatro horas (porque el horario de Venezuela es UTC-4), mientras que en los otros dos casos se mostraban correctamente.
+
+### 2.5 Otras consideraciones
+
+Para evitar que el solucionador Glucose se ejecute sabiendo de antemano que posiblemente no tenga solución, se implementó una función que verifica si el problema es trivialmente insatisfacible. Esto se hace verificando:
+
+- Número de equipos >= 2.
+- Número de horas >= 2 (cada torneo debe durar al menos dos horas).
+- Número de días >= 2 (dado que un participante no puede jugar dos veces el mismo día).
+- Número de días >= 2 * (número de equipos - 1) (dado que cada equipo debe jugar al menos una vez contra cada otro equipo).
+- Número de horas * número de días >= número de equipos * (número de equipos - 1) * 2 (dado que cada equipo debe jugar al menos una vez contra cada otro equipo como local y como visitante).
 
 ## 3. Resultados experimentales
 
@@ -227,12 +235,23 @@ Para la ejecución del programa se utilizó un computador con las siguientes car
 
 ### 3.2 Casos de prueba
 
-Se crearon `TANTOS` casos de prueba, fáciles y difíciles, para probar el correcto funcionamiento del programa. Los casos de prueba se encuentran en la carpeta `data`.
+Se crearon casos de prueba, fáciles y difíciles, para probar el correcto funcionamiento del programa. Los casos de prueba se encuentran en la carpeta `data`.
 
 ### 3.3 Ejecuciones
 
-| # Equipos | # Días | # Horas | # Partidos | # Cláusulas | Tiempo (s) |
-| --------- | ------ | ------- | ---------- | ----------- | ---------- |
+| # Test |   Dificultad   | # Equipos | # Días | # Horas | # Partidos |  # Cláusulas  | Tiempo (s) | Solución Encontrada |
+| ------ | -------------- | --------- | ------ | ------- | ---------- | ------------- | ---------- | ------------------- |
+|   1    |   Fácil        |     2     |   4    |    2    |      2     |         42    |   1.743    |        Sí           |
+|   2    |   Fácil        |     3     |   6    |    2    |      6     |        384    |   1.745    |        Sí           |
+|   3    |   Fácil        |     4     |   7    |    4    |     12     |      17964    |   1.746    |        Sí           |
+|   4    |   Fácil        |     4     |   13   |    8    |     12     |     183964    |   1.768    |        Sí           |
+|   5    |   Medio        |     7     |   15   |    6    |     42     |     791627    |  22.297    |        Sí           |
+|   6    |   Medio        |     8     |   62   |    3    |     56     |    1014760    |   2.171    |        Sí           |
+|   7    |   Medio        |    10     |   50   |    6    |     90     |    9412090    |   8.226    |        Sí           |
+|   8    |   Difícil      |    12     |   60   |    6    |    132     |   21617412    |  17.856    |        Sí           |
+|   9    |   Difícil      |    13     |   60   |    6    |    156     |   28778256    |  23.156    |        Sí           |
+|  10    |   Difícil      |    14     |   40   |   12    |    182     |   96570446    | 139.620    |        Sí           | 
+|  11    |   Difícil      |    16     |   62   |   18    |    240     |  511797424    | +624.118   |        No (RIP Memoria)          |
 
 
 ## 4. Conclusiones

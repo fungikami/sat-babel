@@ -1,19 +1,13 @@
 {
-    "tournament_name": "El goldo",
-    "start_date": "2023-07-24",
-    "end_date": "2023-08-07",
-    "start_time": "05:01:00.000",
-    "end_time": "20:59:00.000",
+    "tournament_name": "El afortunado",
+    "start_date": "2023-07-01",
+    "end_date": "2023-07-07",
+    "start_time": "00:00:00.000",
+    "end_time": "04:00:00.000",
     "participants": [
-        "Mito",
-        "Moto",
-        "Meto",
-        "Mato",
-        "Muto",
-        "Mopa",
-        "Mope",
-        "Mopi",
-        "Mopo",
-        "Mopu"
+        "Juan",
+        "Pedro",
+        "Pablo",
+        "Jose"
     ]
 }

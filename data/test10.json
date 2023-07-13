@@ -1,21 +1,8 @@
 {
-    "tournament_name": "El afortunado",
-    "start_date": "2023-01-01",
-    "end_date": "2023-03-01",
-    "start_time": "02:00:00.000",
-    "end_time": "08:00:00.000",
-    "participants": [
-        "Juan",
-        "Pedro",
-        "Pablo",
-        "Jose",
-        "Luis",
-        "Carlos",
-        "Jorge",
-        "Raul",
-        "Ricardo",
-        "Roberto",
-        "Pepe",
-        "El J"
-    ]
+    "tournament_name": "Campeonato de Deletreo",
+    "start_date": "2023-11-01",
+    "end_date": "2023-12-10",
+    "start_time": "07:00:00",
+    "end_time": "19:00:00",
+    "participants": ["A", "B", "C", "D", "E", "F", "G", "H","I","J","K","L","M","N"]
 }

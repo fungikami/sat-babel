@@ -1,6 +1,6 @@
 # sat-planner
 
-Tu planeador favorito de torneos de ajedrez.
+Tu planeador favorito de torneos.
 
 ## Comenzando :rocket: (Linux)
 
@@ -31,6 +31,21 @@ sat-planner input_file
 ```
 
 siendo `input_file` el archivo de entrada que describe el problema en formato JSON con la estructura descrita en la sección siguiente. El archivo de salida es un archivo en formato iCalendar que se genera en el directorio actual con el nombre del torneo descrito en el archivo de entrada y la extensión `.ics`.
+
+## Formato de entrada
+
+Se utiliza un archivo JSON para describir el problema. El archivo contiene un solo objeto con los siguientes campos:
+
+```json
+{
+  "tournament_name": String. Nombre del torneo,
+  "start_date": String. Fecha de inicio del torneo en formato ISO 8601,
+  "end_date": String. Fecha de finalización del torneo en formato ISO 8601,
+  "start_time": String. Hora a partir de la cual pueden comenzar los juegos cada día, en formato ISO 8601,
+  "end_time": String. Hora a la que deben terminar los juegos cada día, en formato ISO 8601,
+  "participants": [String]. Lista de participantes en el torneo
+}
+```
 
 ## Informe
 

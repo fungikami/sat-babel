@@ -1,13 +1,8 @@
 {
-    "tournament_name": "El afortunado",
+    "tournament_name": "El calbo",
     "start_date": "2023-07-01",
-    "end_date": "2023-07-07",
+    "end_date": "2023-07-15",
     "start_time": "00:00:00.000",
-    "end_time": "04:00:00.000",
-    "participants": [
-        "Juan",
-        "Pedro",
-        "Pablo",
-        "Jose"
-    ]
+    "end_time": "06:00:00.000",
+    "participants": ["Dabid", "L", "P", "T", "K", "C", "?"]
 }

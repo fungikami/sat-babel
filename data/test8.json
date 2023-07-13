@@ -1,15 +1,21 @@
 {
-  "tournament_name": "FELIAÑO",
-  "start_date": "2023-11-30",
-  "end_date": "2024-01-30",
-  "start_time": "08:00:00",
-  "end_time": "11:00:00",
-  "participants": [
-    "P0",
-    "P1",
-    "P2",
-    "P3",
-    "P4",
-    "P5"
-  ]
+    "tournament_name": "El afortunado",
+    "start_date": "2023-01-01",
+    "end_date": "2023-03-01",
+    "start_time": "02:00:00.000",
+    "end_time": "08:00:00.000",
+    "participants": [
+        "Juan",
+        "Pedro",
+        "Pablo",
+        "Jose",
+        "Luis",
+        "Carlos",
+        "Jorge",
+        "Raul",
+        "Ricardo",
+        "Roberto",
+        "Pepe",
+        "El J"
+    ]
 }

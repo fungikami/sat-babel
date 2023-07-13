@@ -1,11 +1,19 @@
 {
-    "tournament_name": "El más goldo",
-    "start_date": "2023-07-28",
-    "end_date": "2023-07-28",
-    "start_time": "13:01:00.000",
-    "end_time": "16:59:00.000",
+    "tournament_name": "El afortunado",
+    "start_date": "2023-01-01",
+    "end_date": "2023-02-19",
+    "start_time": "02:00:00.000",
+    "end_time": "08:00:00.000",
     "participants": [
-        "Kama",
-        "Chuwo"
+        "Juan",
+        "Pedro",
+        "Pablo",
+        "Jose",
+        "Luis",
+        "Carlos",
+        "Jorge",
+        "Raul",
+        "Ricardo",
+        "Roberto"
     ]
 }
