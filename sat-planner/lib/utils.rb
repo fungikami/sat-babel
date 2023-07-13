@@ -25,7 +25,7 @@ def get_hours(start_time, end_time)
   n_hours = end_time.hour - start_time.hour
 
   # If minute is not exactly on the hour, "round up"
-  if start_time.min > 0
+  if Time.parse("#{start_time.hour}:00:00.000") != start_time
     n_hours -= 1
   end
 
@@ -96,10 +96,9 @@ end
 # @param n_available_hours [Integer] the number of available hours
 # @return [Boolean] true if the test passed, false otherwise
 def test_maps(n_participants, n_days, n_available_hours)
-
-  # Create the map
   map_to_cnf = create_map_to_cnf(n_participants, n_days, n_available_hours)
 
+  # Loop through all the search space
   for i in 0...n_participants
     for j in 0...n_participants
       for k in 0...n_days
@@ -181,7 +180,7 @@ def create_ics(solution, tournament_name, participants, start_date, start_time)
   start_time = Time.parse(start_time)
 
   # Round time if min > 0, add to start date to get the next o'clock
-  if start_time.min > 0 || start_time.sec > 0
+  if Time.parse("#{start_time.hour}:00:00.000") != start_time
     start_time = Time.parse("#{start_time.hour + 1}:00:00")
   end
 

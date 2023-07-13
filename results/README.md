@@ -160,7 +160,7 @@ Para realizar el programa se utilizó el lenguaje de programación [Ruby](https:
 
 Para traducir el problema a una instacia de SAT y escribir las cláusulas en el formato DIMACS se utilizaron los modelados de la sección anterior, las cuales se desarrollaron usando teoremas de lógica proposicional para llevarlas a su forma normal conjuntiva (CNF, conjunción de disyunciones) y luego se escribieron en el formato DIMACS.
 
-Una decisión de diseño importante fue la forma en que se iban a generar las cláusulas y se iban a escribir en el archivo en formato DIMACS. Principalmente, se consideraron dos opciones: (i) generar todas las cláusulas en memoria y luego escribirlas en el archivo DIMACS, o (ii) generar y escribir las cláusulas en el archivo de forma simultánea a medida que se iban generando, y dentro de cada opción se intentaron varias implementaciones.
+Una decisión de diseño importante fue la forma en que se iban a generar las cláusulas y se iban a escribir en el archivo en formato DIMACS. Principalmente, se consideraron dos opciones: (i) generar todas las cláusulas en memoria y luego escribirlas en el archivo DIMACS, o (ii) generar y escribir las cláusulas en el archivo a medida que se iban generando, y dentro de cada opción se intentaron varias implementaciones.
 
 i.a. Guardar las cláusulas en memoria usando un `Array` de Ruby.
 i.b. Guardar las cláusulas en memoria usando un `Set` de Ruby, de esta forma se eliminarían cláusulas repetidas al coste de un mayor tiempo de ejecución (aunque el tiempo de acceso es constante debido a que se trata de una tabla de hash, las constantes ocultas son mayores que las de un `Array`).
@@ -179,11 +179,11 @@ De cada una de estas opciones consideradas, luego de hacer pruebas de rendimient
 
 + Aunque con la implementación de (ii.a) lo que se buscaba inicialmente solo era reducir el gasto de memoria para hacer viable la traducción para casos grandes, se observó que esta implementación resultaba mucho más rápida que las anteriores, lo que terminó siendo la razón principal para elegirla.
 
-+ Para (ii.b) e (ii.c) se pueden encontrar bosquejos de la implementación en varias ramas del repositorio, sin embargo, ninguna de estas fue satisfactoria en términos de rendimiento, pues la escritura concurrente de un mismo archivo requiere un mecanismo de sincronización que termina siendo más costoso (para ii.b), y, por lo menos en un disco duro mecánico , la escritura paralela de varios archivos termina siendo más lenta que la escritura secuencial de un solo archivo (para ii.c).
++ Para (ii.b) e (ii.c) se pueden encontrar bosquejos de la implementación en varias ramas del repositorio (`concurrency` y `concurrency-2`), sin embargo, ninguna de estas fue satisfactoria en términos de rendimiento, pues la escritura concurrente de un mismo archivo requiere un mecanismo de sincronización que termina siendo más costoso (para ii.b), y, por lo menos en un disco duro mecánico , la escritura paralela de varios archivos termina siendo más lenta que la escritura secuencial de un solo archivo (para ii.c) (de hecho, ni siquiera ocurre en paralelo sino en un solo lote al final, lo que puede deberse al scheduling del disco).
 
 Desarrollando para la implementación escogida, para un caso de 10 participantes, 18 días y 20 horas (`../data/test0.json`), se observó que (i.a) tomaba en promedio 114 segundos para generar el archivo DIMACS, mientras que con el segundo caso el tiempo promedio de generación del archivo era de 15.5 segundos.
 
-Siguiendo con los detalles de implementación, para mapear las variables del modelado (i.e. $x_{ijkl}$) a las variables del formato DIMACS (i.e. $x_{m}$), se idearon en principio la siguiente función biyectiva:
+Siguiendo con los detalles de implementación, para mapear las variables del modelado (i.e. $x_{ijkl}$) a las variables del formato DIMACS (i.e. $x_{m}$), se ideó en principio la siguiente función biyectiva:
 
 $$ f: \mathbb{N}^4 \to \mathbb{N} \setminus \{0\}$$
 
@@ -191,37 +191,47 @@ $$f(i, j, k, l) = (h-1)(d(in + j) + k) + l + 1$$
 
 y su inversa:
 
-$$ f^-1: \mathbb{N} \setminus \{0\} \to \mathbb{N}^4$$
+$$ f^{-1}: \mathbb{N} \setminus \{0\} \to \mathbb{N}^4$$
 
-$$f^-1(x) = (x \div (nd(h - 1)), (x \div (d(h - 1))) \mod n, (x \div (h - 1)) \mod d, x \mod (h - 1))$$
+$$f^{-1}(x) = (x \div (nd(h - 1)), (x \div (d(h - 1))) \mod n, (x \div (h - 1)) \mod d, x \mod (h - 1))$$
 
-sin embargo, dado que se al generar las restricciones se itera numerosas veces sobre $[0..n) \times [0..n) \times [0..d) \times [0..h-1)$, se decidió utilizar un arreglo de cuatro dimensiones para mapear las variables del modelado a las variables del formato DIMACS, por su sencillez y mejor eficiencia que la función $f$ (aunque la diferencia es despreciable, pues la función $f$ es $O(1)$).
+sin embargo, dado que se al generar las restricciones se itera numerosas veces sobre $[0..n) \times [0..n) \times [0..d) \times [0..h-1)$, se decidió utilizar un arreglo de cuatro dimensiones para mapear las variables del modelado a las variables del formato DIMACS, por su sencillez y mejor eficiencia que la función $f$ (aunque la diferencia es despreciable, pues la función $f$ es $O(1)$ ).
 
-Si bien el gasto de memoria usando el mapa no es constante como es deseable, es muy pequeño en comparación con el gasto de memoria de las cláusulas, por lo que no se consideró un problema. En una instancia de 26 participantes, 121 días y 23 horas (`data/test12.json`) el número de variables es alrededor de 1 millón 800 mil y el gasto de memoria no supera todavía los 80MB (el ejecutable por sí solo gasta alrededor de 30MB), siendo este un caso que difícilmente se llegue a presentar en la práctica, pues el número de cláusulas es de casi 8 mil millones.
+Si bien el gasto de memoria usando el mapa no es constante como es deseable, es muy pequeño en comparación con el gasto de memoria de las cláusulas, por lo que no se consideró un problema. En una instancia de 26 participantes, 121 días y 23 horas (`data/test12.json`) el número de variables es alrededor de 1 millón 800 mil y el gasto de memoria no supera todavía los 80MB (el ejecutable por sí solo gasta alrededor de 30MB), siendo este un caso que difícilmente se llegue a presentar en la práctica, pues el número de cláusulas es de casi 8 mil millones. Por otro lado, el tiempo de creación del mapa es despreciable para cualquier instancia razonable, tardando no más de unos cuantos milisengundos.
 
-Luego, como el mapa inverso no se recorre varias veces y solo se necesitan unos cuantos valores para traducir la solución de `glucose`, se prescindió de precalcular el mapa y se implementó directamente la función $f^-1$.
+Luego, como el mapa inverso no se recorre varias veces y solo se necesitan unos cuantos valores para traducir la solución de `glucose`, se prescindió de precalcular el mapa y se implementó directamente la función $f^{-1}$.
 
 ### 2.3 Glucose Solver
 
 Tras la traducción del problema en un caso de SAT, se procedió a ejecutar el programa `glucose`, en su versión 4.2.1, para resolver el problema.
 
-Se observó que `glucose-syrup` es más rápido que `glucose`, pues se trata de una implementación que se aprovecha del paralelismo y utiliza múltiples núcleos de la CPU para resolver el problema (llegando a ser hasta 2 veces más rápido que `glucose` en algunos casos), sin embargo, no se utilizó porque la implementación, probablemente por algún bug, genera un archivo de salida vacío, a pesar de efectivamente encontrar una solución.
+Se observó que `glucose-syrup` es más rápido que `glucose`, pues se trata de una implementación que se aprovecha del paralelismo y utiliza múltiples núcleos de la CPU para resolver el problema (llegando a ser hasta 2 o más veces más rápido que `glucose` en algunos casos), sin embargo, no se utilizó porque la implementación, probablemente por algún bug, genera un archivo de salida vacío, a pesar de efectivamente encontrar una solución.
 
 ### 2.4 iCalendar
 
-Luego, se procedió a generar el archivo iCalendar a partir de la solución obtenida por `glucose`, en el que se incluye la información de los partidos como eventos en un formato agradable, así como la información de los equipos, ya sea local o visitante.
+Luego, se procedió a generar el archivo iCalendar a partir de la solución obtenida por `glucose`, en el que se incluye la información tanto de los partidos como eventos en un formato agradable, así como la información de los equipos, ya sea local o visitante.
 
-Se observó que el horario puede presentar inconsistencias según la aplicación de calendario utilizada. Las soluciones obtenidas se importaron a `Google Calendar`, `Calendar` (aplicación de Huawei) y `GNOME Calendar`, y en este último caso se observó que los horarios se encontraban desfasados en cuatro horas (porque el horario de Venezuela es UTC-4), mientras que en los otros dos casos se mostraban correctamente.
+Se observó que el horario puede presentar inconsistencias según la aplicación de calendario utilizada. Las soluciones obtenidas se importaron a `Google Calendar`, `Calendar` (aplicación de Huawei) y `GNOME Calendar`, y en este último caso se observó que los horarios se encontraban desfasados en cuatro horas (porque el horario de la máquina es UTC-4 (Caracas)), mientras que en los otros dos casos se mostraban correctamente.
 
 ### 2.5 Otras consideraciones
 
-Para evitar que el solucionador Glucose se ejecute sabiendo de antemano que posiblemente no tenga solución, se implementó una función que verifica si el problema es trivialmente insatisfacible. Esto se hace verificando:
+Para evitar ejecutar una traducción y el posterior intento de resolución de instancias del problema que por su forma son inconsistentes o incompatibles con las restricciones dadas, se implementó una función que verifica ciertas condiciones mínimas para que el problema sea por lo menos consistente con las restricciones (plausible de solucionar). Esto se hace verificando:
 
-- Número de equipos >= 2.
-- Número de horas >= 2 (cada torneo debe durar al menos dos horas).
-- Número de días >= 2 (dado que un participante no puede jugar dos veces el mismo día).
-- Número de días >= 2 * (número de equipos - 1) (dado que cada equipo debe jugar al menos una vez contra cada otro equipo).
-- Número de horas * número de días >= número de equipos * (número de equipos - 1) * 2 (dado que cada equipo debe jugar al menos una vez contra cada otro equipo como local y como visitante).
+- $n \geq 2$: No se admiten torneos de una sola persona.
+- $h \geq 2$: Cada torneo debe durar al menos dos horas.
+- $d \geq 2$: Dado que un participante no puede jugar dos veces el mismo día, para el número mínimo de participantes se necesitan al menos dos días para tener un torneo consistente.
+- $d \geq 2 (n - 1)$: Dado que cada equipo debe jugar dos veces contra los demás equipos, no será posible completar el torneo en menos tiempo.
+- $hd \leq 2n(n - 1)$: Dado que se han de planificar $n(n-1)$ partidos de 2 horas de duración..
+
+De esa forma, si algunas de las condiciones anteriores no se cumple el programa termina sin generar siquiera una traducción del problemas.
+
+### 2.6 Otras consideraciones
+
++ Se pensó en cortar el tamaño del espacio del búsqueda a la mitad dividiendo el número de horas a la mitad, de tal forma que cada variable represente un intervalo de dos horas. Intuitivamente, esto no parece afectar la satisfacibilidad del problema, sin embargo, se decidió dejar el espacio de búsqueda entero para permitir que la solución no necesariamente esté alineada con la hora inicial por intervalos de dos horas (esto es, si la hora inicial es 13:00:00, esa forma de modelar solamente permitiría los partidos de la solución empezar a las 13:00:00, 15:00:00, 17:00:00, etc.,  y no a las 14:00:00, 16:00:00, 18:00:00, etc.). De esta forma, se infiere (sin demostración) que a pesar de tener un espacio de búsqueda más grande (no asintóticamente, pero sí en la práctica): (i) el solver podría explotar mejor las propiedades de las cláusulas al tener más variables y al menos tantas soluciones como la otra forma de modelar, con posibilidad de tener aún más; y (ii) haría el programa más general/alineado con usos reales, pues ningún bloque disponible queda excluido de formar parte de la solución.
+
++ Se añadió una restricción adicional, que consiste en que ningún equipo puede jugar consigo mismo. A pesar de parecer innecesario, pues las demás restricciones evitan que esto ocurra desde su rango, todavía existen casos en los que se generan cláusulas que permiten que esto ocurra. Por otro lado, al ser todas las cláusulas de esta restricción unitarias, se infiere que quizás serían de ayuda para el solver en el paso de propagación unitaria.
+
++ Los archivos generados por el programa (principalmente el archivo DIMACS) pueden llegar a ser muy pesados (por ejemplo, 1.4GB para el test en `data/test10.json`), por lo que se decidió eliminarlos al finalizar la ejecución del programa. Sin embargo, con propósitos de depuración, se puede ejecutar el programa con la opción `-d` al final para evitar la limpieza del directorio temporal.
 
 ## 3. Resultados experimentales
 
@@ -250,7 +260,7 @@ Se crearon casos de prueba, fáciles y difíciles, para probar el correcto funci
 |   7    |   Medio        |    10     |   50   |    6    |     90     |    9412090    |    8.226   |        5.477628295       |       2.004433763       |      Sí          |
 |   8    |   Difícil      |    12     |   60   |    6    |    132     |   21617412    |   21.164   |        15.430484139      |       5.229446678       |      Sí          |
 |   9    |   Difícil      |    13     |   60   |    6    |    156     |   28778256    |   24.723   |        17.033555612      |       6.412920708       |      Sí          |
-|  10    |   Difícil      |    14     |   40   |   12    |    182     |   96570446    |  168.409   |        57.999698434      |       109.141499816     |      Sí          | 
+|  10    |   Difícil      |    14     |   40   |   12    |    182     |   96570446    |  168.409   |        57.999698434      |       109.141499816     |      Sí          |
 |  11    |   Difícil      |    16     |   62   |   18    |    240     |  511797424    | +624.118   |             -            |             -           | No (RIP Memoria) |
 |  12    |   Difícil      |    26     |  121   |   23    |    650     |  7937034612   |      -     |             -            |             -           | No (RIP Memoria) |
 |  13    |   Fácil        |     2     |   1    |    2    |      2     |         42    |    0.152   |             -            |             -           | Sí (UNSAT)       |
@@ -260,4 +270,20 @@ Se crearon casos de prueba, fáciles y difíciles, para probar el correcto funci
 
  <!-- Tests 13, 14, 15 se ven que son UNSAT desde antes de generar el archivo en formato DIMACS  -->
 
+### 3.4 Análisis de resultados
+
+<!-- Analizar las gráficas -->
+
+<!-- Hablar sobre que el caso dificil duró apróximadamente 15h en ejecucion a pesar de no ser el más grande de los casos, y es debido a que no es satisfacible y la forma en la que se ejecuta el sat solver no está optimizada para probar la no-satisfacibilidad de una instancia (reinicios aleatorios, etc.), por lo que no existen características que el solver pueda explotar para encontrar una solución en un tiempo razonable y la ejecución termina revisando el espacio de forma casi exhaustiva. -->
+
 ## 4. Conclusiones
+
+<!-- Expandir -->
+
++ La importancia de un buen diseño.
+
++ La importancia de la elección de las estructuras de datos.
+
++ Ensayo y error.
+
++ A pesar de ser NP-completo, se resuelven casos de cientos de miles de variables y millones de cláusulas en un tiempo muchísimo menor al que en teoría tomaría al peor caso (exponencial), sin embargo, esto no quiere decir que se pueda resolver cualquier instancia en tiempo polinomial, sino que sirve para tener una visión del estado del arte de los algoritmos de SAT y la forma en que son capaces de sacar ventaja de cada propiedad de ciertas instancias para resolverlas en un tiempo razonable.
