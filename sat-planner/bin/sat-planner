@@ -76,8 +76,14 @@ def main
   end
 
   solution = extract_solution(solution_filename, n_participants, n_days, n_hours)
+
+  if !debug
+    puts "\nCleaning DIMACS and SAT solution files... 🧹 (You can keep them with the -d flag)\n\n"
+    FileUtils.rm_rf(".tmp_sat-planner")
+  end
+
   if solution.empty?
-    puts "A schedule for this tournament isn't possible, plan something else 🦧\n\n"
+    puts "A schedule for this tournament isn't possible, plan something else 🦧"
     exit 0
   end
 
@@ -94,12 +100,6 @@ def main
   }
 
   puts "Calendar generated in #{t_ics} seconds! You can check your calendar at '#{output_filename}', have fun 📵"
-
-  if !debug
-    puts "\nCleaning DIMACS and SAT solution files... 🧹"
-    FileUtils.rm_rf(".tmp_sat-planner")
-    puts "Done! (You can keep them with the -d flag)"
-  end
 end
 
 main if __FILE__ == $0

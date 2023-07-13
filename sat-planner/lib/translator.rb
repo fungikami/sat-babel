@@ -96,6 +96,9 @@ def solve_cnf(filename, bin_path)
   rescue Interrupt
     puts "\rInterrupted! 🤬#{" " * 44}\n\n"
 
+    # Remove .temp_sat-planner directory
+    FileUtils.rm_rf(".tmp_sat-planner")
+
     # Kill the child process
     Process.kill("TERM", pid)
     exit 1
