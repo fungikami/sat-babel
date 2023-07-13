@@ -67,7 +67,7 @@ def main
     puts "\rInterrupted! 🤬#{" " * 112}"
     exit 1
   end
-  puts "\rUnderstanding complete in #{t_translation} seconds! 💅#{" " * 20}\n\n"
+  puts "\rUnderstanding complete in #{t_translation} seconds! 💅 (DIMACS translation generated in #{cnf_filename})\n\n"
   
   solution_filename = solve_cnf(cnf_filename, "glucose")
 
@@ -77,12 +77,8 @@ def main
 
   solution = extract_solution(solution_filename, n_participants, n_days, n_hours)
   if solution.empty?
-    puts "A schedule for this tournament isn't possible, plan something else 🦧"
+    puts "A schedule for this tournament isn't possible, plan something else 🦧\n\n"
     exit 0
-  end
-
-  if !debug
-    FileUtils.rm_rf(solution_filename)
   end
 
   # Create .ics file from solution
@@ -98,6 +94,12 @@ def main
   }
 
   puts "Calendar generated in #{t_ics} seconds! You can check your calendar at '#{output_filename}', have fun 📵"
+
+  if !debug
+    puts "\nCleaning DIMACS and SAT solution files... 🧹"
+    FileUtils.rm_rf(".tmp_sat-planner")
+    puts "Done! (You can keep them with the -d flag)"
+  end
 end
 
 main if __FILE__ == $0

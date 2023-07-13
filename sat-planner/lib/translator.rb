@@ -17,11 +17,11 @@ def translate_to_cnf(n_participants, n_days, n_hours, filename)
   n_clauses = calculate_number_of_clauses(n_participants, n_days, n_hours)
   map_to_cnf = create_map_to_cnf(n_participants, n_days, n_available_hours)
 
-  translation_filename = "tmp/" \
+  translation_filename = ".tmp_sat-planner/" \
   "#{File.basename(filename, File.extname(filename))}_translation.cnf"
 
   # Creates the directory if it doesn't exist
-  FileUtils.mkdir_p("tmp")
+  FileUtils.mkdir_p(".tmp_sat-planner")
 
   File.open(translation_filename, "w") do |f|
     # Write header
@@ -66,7 +66,7 @@ end
 # @param [String] bin_path Path to the SAT Solver binary
 # @return [String] Name of the solution file
 def solve_cnf(filename, bin_path)
-  solution_filename = "tmp/" \
+  solution_filename = ".tmp_sat-planner/" \
   "#{File.basename(filename, File.extname(filename))}_solution.cnf"
 
   # Run in background to avoid blocking
@@ -82,7 +82,7 @@ def solve_cnf(filename, bin_path)
         status = Process.waitpid2(pid, Process::WNOHANG)
       rescue Errno::ECHILD
         # Child process has exited, do something
-        puts "\rWe're finished in #{Time.now - t_start} seconds! 🦛#{' ' * 8}\n\n"
+        puts "\rWe're finished in #{Time.now - t_start} seconds! 🦛 (Solution found in #{solution_filename})\n\n"
         break
       end
 
