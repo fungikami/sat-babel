@@ -15,7 +15,7 @@ git clone --recursive https://github.com/fungikami/sat-planner.git
 Luego, en la carpeta raíz del repositorio:
 
 ```bash
-source install.sh
+source install.sh # o . install.sh
 ```
 
 Si hay algún problema con la instalación, pruebe a clonar nuevamente el repositorio en un directorio distinto. Asegúrese de que la nueva ubicación no tenga espacios en el nombre, debido a que un submódulo de la instalación no funciona correctamente en ubicaciones con espacios en el nombre.
