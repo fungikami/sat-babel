@@ -4,7 +4,7 @@
 # (∀ i, k, l: -x_iikl)
 #
 # @param file [File] the file to write the constraint to
-# @param map [Array] the map from initial space to CNF space
+# @param map [Lambda] the map from initial space to CNF space
 # @param np [Integer] the number of participants
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours
@@ -25,7 +25,7 @@ end
 # (∀ i, j| i != j: (∃ k, l| : x_ijkl))
 #
 # @param file [File] the file to write the constraint to
-# @param map [Array] the map from initial space to CNF space
+# @param map [Lambda] the map from initial space to CNF space
 # @param np [Integer] the number of participants
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours
@@ -55,7 +55,7 @@ end
 # (∀ i, j, k, l | i != j ^ l < h-2 : x_ijkl => -(∃ u, v | (i != u v j != v) ^ u != v:x_uvk(l+1)}))
 #
 # @param file [File] the file to write the constraint to
-# @param map [Array] the map from initial space to CNF space
+# @param map [Lambda] the map from initial space to CNF space
 # @param np [Integer] the number of participants
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours
@@ -91,7 +91,7 @@ end
 # (∀ i, j, k, l | i != j : x_ijkl => -(∃ p, q | q != l :x_ipkq v x_pjkq v x_jpkq v x_pikq))
 #
 # @param file [File] the file to write the constraint to
-# @param map [Array] the map from initial space to CNF space
+# @param map [Lambda] the map from initial space to CNF space
 # @param np [Integer] the number of participants
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours
@@ -126,7 +126,7 @@ end
 # (∀ i, j, k, l | i != j ^ k < d - 1 : x_ijkl => -(∃ p, q | :x_ip(k+1)q v x_pj(k+1)q))
 #
 # @param file [File] the file to write the constraint to
-# @param map [Array] the map from initial space to CNF space
+# @param map [Lambda] the map from initial space to CNF space
 # @param np [Integer] the number of participants
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours

@@ -15,7 +15,7 @@ def translate_to_cnf(n_participants, n_days, n_hours, filename)
   n_available_hours = n_hours - 1
   n_variables = n_participants ** 2 * n_days * n_available_hours
   n_clauses = calculate_number_of_clauses(n_participants, n_days, n_hours)
-  map_to_cnf = create_map_to_cnf(n_participants, n_days, n_available_hours, false)
+  map_to_cnf = create_map_to_cnf(n_participants, n_days, n_available_hours)
 
   translation_filename = "tmp/" \
   "#{File.basename(filename, File.extname(filename))}_translation.cnf"

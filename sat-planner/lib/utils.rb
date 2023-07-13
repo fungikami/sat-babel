@@ -41,31 +41,10 @@ end
 # @param n_days [Integer] the number of days
 # @param n_available_hours [Integer] the number of available hours
 # @return [Array] the map
-def create_map_to_cnf(n_participants, n_days, n_available_hours, linear_space = true)
-  if !linear_space
-    return -> (i, j, k, l) {
-      n_available_hours * (n_days * (n_participants * i + j) + k) + l + 1
-    }
-  end
-
-  n = 1
-  map = []
-
-  for i in 0...n_participants
-    map[i] = []
-    for j in 0...n_participants
-      map[i][j] = []
-      for k in 0...n_days
-        map[i][j][k] = []
-        for l in 0...n_available_hours
-          map[i][j][k][l] = n
-          n += 1
-        end
-      end
-    end
-  end
-
-  -> (i, j, k, l) { map[i][j][k][l] }
+def create_map_to_cnf(n_participants, n_days, n_available_hours)
+  -> (i, j, k, l) {
+    n_available_hours * (n_days * (n_participants * i + j) + k) + l + 1
+  }
 end
 
 # Maps from CNF space to the initial space back to the initial space
@@ -112,7 +91,7 @@ def test_maps(n_participants, n_days, n_available_hours)
         for l in 0...n_available_hours
           # Verify that f^-1(f(v)) == v
           if [i, j, k, l] != map_from_cnf(
-            map_to_cnf(i, j, k, l),
+            map_to_cnf.(i, j, k, l),
             n_participants,
             n_days,
             n_available_hours
