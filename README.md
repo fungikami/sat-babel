@@ -38,12 +38,12 @@ Se utiliza un archivo JSON para describir el problema. El archivo contiene un so
 
 ```json
 {
-  "tournament_name": String. Nombre del torneo,
-  "start_date": String. Fecha de inicio del torneo en formato ISO 8601,
-  "end_date": String. Fecha de finalización del torneo en formato ISO 8601,
-  "start_time": String. Hora a partir de la cual pueden comenzar los juegos cada día, en formato ISO 8601,
-  "end_time": String. Hora a la que deben terminar los juegos cada día, en formato ISO 8601,
-  "participants": [String]. Lista de participantes en el torneo
+  "tournament_name": "String. Nombre del torneo",
+  "start_date": "String. Fecha de inicio del torneo en formato ISO 8601",
+  "end_date": "String. Fecha de finalización del torneo en formato ISO 8601",
+  "start_time": "String. Hora a partir de la cual pueden comenzar los juegos cada día, en formato ISO 8601",
+  "end_time": "String. Hora a la que deben terminar los juegos cada día, en formato ISO 8601",
+  "participants": ["String. Lista de participantes en el torneo]
 }
 ```
 
