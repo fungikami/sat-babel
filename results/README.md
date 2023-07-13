@@ -183,37 +183,42 @@ De cada una de estas opciones consideradas, luego de hacer pruebas de rendimient
 
 Desarrollando para la implementación escogida, para un caso de 10 participantes, 18 días y 20 horas (`../data/test0.json`), se observó que (i.a) tomaba en promedio 114 segundos para generar el archivo DIMACS, mientras que con el segundo caso el tiempo promedio de generación del archivo era de 15.5 segundos.
 
-Siguiendo con los detalles de implementación, para mapear las variables del modelado (i.e. $x_{ijkl}$) a las variables del formato DIMACS (i.e. $x_{m}$), se idearon en principio las siguientes funciones:
+Siguiendo con los detalles de implementación, para mapear las variables del modelado (i.e. $x_{ijkl}$) a las variables del formato DIMACS (i.e. $x_{m}$), se idearon en principio la siguiente función biyectiva:
 
 $$ f: \mathbb{N}^4 \to \mathbb{N} \setminus \{0\}$$
+
 $$f(i, j, k, l) = (h-1)(d(in + j) + k) + l + 1$$
 
-y su inversa
+y su inversa:
+
+$$ f^-1: \mathbb{N} \setminus \{0\} \to \mathbb{N}^4$$
 
 $$f^-1(x) = (x \div (nd(h - 1)), (x \div (d(h - 1))) \mod n, (x \div (h - 1)) \mod d, x \mod (h - 1))$$
 
-sin embargo, dado que se al generar las restricciones se itera numerosas veces sobre $[0..n) \times [0..n) \times [0..d) \times [0..h-1)$, se decidió utilizar un arreglo de cuatro dimensiones para mapear las variables del modelado a las variables del formato DIMACS, por su sencillez y posible mejor eficiencia que la función $f$.
+sin embargo, dado que se al generar las restricciones se itera numerosas veces sobre $[0..n) \times [0..n) \times [0..d) \times [0..h-1)$, se decidió utilizar un arreglo de cuatro dimensiones para mapear las variables del modelado a las variables del formato DIMACS, por su sencillez y mejor eficiencia que la función $f$ (aunque la diferencia es despreciable, pues la función $f$ es $O(1)$).
+
+Si bien el gasto de memoria usando el mapa no es constante como es deseable, es muy pequeño en comparación con el gasto de memoria de las cláusulas, por lo que no se consideró un problema. En una instancia de 26 participantes, 121 días y 23 horas (`data/test14.json`) el número de variables es alrededor de 1 millón 800 mil y el gasto de memoria no supera todavía los 80MB (el ejecutable por sí solo gasta alrededor de 30MB), siendo este un caso que difícilmente se llegue a presentar en la práctica, pues el número de cláusulas es de casi 8 mil millones.
+
+Luego, como el mapa inverso no se recorre varias veces y solo se necesitan unos cuantos valores para traducir la solución de `glucose`, se prescindió de precalcular el mapa y se implementó directamente la función $f^-1$.
 
 ### 2.3 Glucose Solver
 
 Tras la traducción del problema en un caso de SAT, se procedió a ejecutar el programa `glucose`, en su versión 4.2.1, para resolver el problema.
 
-Se observó que `glucose-syrup` es más rápido que `glucose`, sin embargo...
+Se observó que `glucose-syrup` es más rápido que `glucose`, pues se trata de una implementación que se aprovecha del paralelismo y utiliza múltiples núcleos de la CPU para resolver el problema (llegando a ser hasta 2 veces más rápido que `glucose` en algunos casos), sin embargo, no se utilizó porque la implementación, probablemente por algún bug, genera un archivo de salida vacío, a pesar de efectivamente encontrar una solución.
 
-
+`glucose`
 
 ### 2.4 iCalendar
 
-Luego, se procedió a generar el archivo iCalendar a partir de la solución obtenida por `glucose`, en caso de ser satisfacible. Para ello, se utilizó la gema `icalendar`, en su versión 2.8. En dicho archivo se incluyó la información de los partidos, así como la información de los equipos, ya sea local o visitante.
+Luego, se procedió a generar el archivo iCalendar a partir de la solución obtenida por `glucose`, en el que se incluye la información de los partidos como eventos en un formato agradable, así como la información de los equipos, ya sea local o visitante.
 
-Se observó que el horario puede presentar inconsistencias según la aplicación de calendario utilizada. Se probó las soluciones obtenidas en `Google Calendar`, `Calendar` (aplicación de Huawei) y `GNOME Calendar` (aplicación de Linux). En el último caso se observó que los horarios se encontraban desfasados en cuatro horas.
-
-
+Se observó que el horario puede presentar inconsistencias según la aplicación de calendario utilizada. Las soluciones obtenidas se importaron a `Google Calendar`, `Calendar` (aplicación de Huawei) y `GNOME Calendar`, y en este último caso se observó que los horarios se encontraban desfasados en cuatro horas (porque el horario de Venezuela es UTC-4), mientras que en los otros dos casos se mostraban correctamente.
 
 ## 3. Resultados experimentales
 
 #### 3.1 Entorno de pruebas
-Para la ejecución de los algoritmos se utilizó un computador con las siguientes características:
+Para la ejecución del programa se utilizó un computador con las siguientes características:
 
 - **Procesador**: Intel i5-1035G1 (8) @ 3.600GHz.
 - **Memoria RAM**: 7689MiB.
@@ -223,7 +228,6 @@ Para la ejecución de los algoritmos se utilizó un computador con las siguiente
 ### 3.2 Casos de prueba
 
 Se crearon `TANTOS` casos de prueba, fáciles y difíciles, para probar el correcto funcionamiento del programa. Los casos de prueba se encuentran en la carpeta `data`.
-
 
 ### 3.3 Ejecuciones
 
