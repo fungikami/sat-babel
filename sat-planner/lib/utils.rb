@@ -213,7 +213,7 @@ def create_ics(solution, tournament_name, participants, start_date, start_time)
 
       e.summary = "#{tournament_name}: #{participants[player1]} vs #{participants[player2]}"
       e.description = <<~DESCRIPTION
-                                    On #{game_date.strftime("%A, %B %d, %Y")}, from #{game_hour}:00 to #{game_hour + 2}:00,
+                                        On #{game_date.strftime("%A, %B %d, %Y")}, from #{game_hour}:00 to #{game_hour + 2}:00,
       #{participants[player1]} will play against #{participants[player2]}.
 
       - #{participants[player1]} play as local

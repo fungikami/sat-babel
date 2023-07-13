@@ -32,13 +32,18 @@ def translate_to_cnf(n_participants, n_days, n_hours, filename)
 
     f.puts "p cnf #{n_variables} #{n_clauses}"
 
-    args = [f, map_to_cnf, n_participants, n_days, n_available_hours]
+    args = [translation_filename, map_to_cnf, n_participants, n_days, n_available_hours]
 
-    write_constraint_1!(*args)
-    write_constraint_2!(*args)
-    write_constraint_3!(*args)
-    write_constraint_4!(*args)
-    write_constraint_5!(*args)
+    # Write constraints concurrently
+    threads = []
+    threads << Thread.new { write_constraint_1!(*args) }
+    threads << Thread.new { write_constraint_2!(*args) }
+    threads << Thread.new { write_constraint_3!(*args) }
+    threads << Thread.new { write_constraint_4!(*args) }
+    threads << Thread.new { write_constraint_5!(*args) }
+
+    # Wait for all threads to finish
+    threads.each(&:join)
   end
 
   translation_filename
@@ -82,7 +87,7 @@ def solve_cnf(filename, bin_path)
         status = Process.waitpid2(pid, Process::WNOHANG)
       rescue Errno::ECHILD
         # Child process has exited, do something
-        puts "\rWe're finished in #{Time.now - t_start} seconds! 🦛#{' ' * 8}\n\n"
+        puts "\rWe're finished in #{Time.now - t_start} seconds! 🦛#{" " * 8}\n\n"
         break
       end
 

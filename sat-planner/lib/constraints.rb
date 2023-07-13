@@ -9,10 +9,15 @@
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours
 def write_constraint_1!(file, map, np, nd, nh)
-  for i in 0...np
-    for k in 0...nd
-      for l in 0...nh
-        file.puts "#{-map[i][i][k][l]} 0"
+  File.open(file, "a") do |file|
+    for i in 0...np
+      for k in 0...nd
+        file.flock(File::LOCK_EX)
+        for l in 0...nh
+          file.puts "#{-map[i][i][k][l]} 0"
+          puts "#{-map[i][i][k][l]} 0"
+        end
+        file.flock(File::LOCK_UN)
       end
     end
   end
@@ -30,17 +35,21 @@ end
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours
 def write_constraint_2!(file, map, np, nd, nh)
-  for i in 0...np
-    for j in 0...np
-      next if i == j
+  File.open(file, "a") do |file|
+    for i in 0...np
+      for j in 0...np
+        next if i == j
 
-      for k in 0...nd
-        for l in 0...nh
-          file.print "#{map[i][j][k][l]} "
+        for k in 0...nd
+          file.flock(File::LOCK_EX)
+          for l in 0...nh
+            file.print "#{map[i][j][k][l]} "
+          end
         end
-      end
 
-      file.puts "0"
+        file.puts "0"
+      end
+      file.flock(File::LOCK_UN)
     end
   end
 end
@@ -60,23 +69,27 @@ end
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours
 def write_constraint_3!(file, map, np, nd, nh)
-  for i in 0...np
-    for j in 0...np
-      next if i == j
+  File.open(file, "a") do |file|
+    for i in 0...np
+      for j in 0...np
+        next if i == j
 
-      for k in 0...nd
-        for l in 0...nh
-          not_x_ijkl = -map[i][j][k][l]
+        for k in 0...nd
+          for l in 0...nh
+            not_x_ijkl = -map[i][j][k][l]
 
-          for u in 0...np
-            for v in 0...np
-              next if (i == u && j == v) || (u == v)
-              # Constraint 3.1
-              file.puts "#{not_x_ijkl} #{-map[u][v][k][l]} 0"
+            for u in 0...np
+              file.flock(File::LOCK_EX)
+              for v in 0...np
+                next if (i == u && j == v) || (u == v)
+                # Constraint 3.1
+                file.puts "#{not_x_ijkl} #{-map[u][v][k][l]} 0"
 
-              # Constraint 3.2
-              next if l >= nh - 1
-              file.puts "#{not_x_ijkl} #{-map[u][v][k][l + 1]} 0"
+                # Constraint 3.2
+                next if l >= nh - 1
+                file.puts "#{not_x_ijkl} #{-map[u][v][k][l + 1]} 0"
+              end
+              file.flock(File::LOCK_UN)
             end
           end
         end
@@ -96,22 +109,26 @@ end
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours
 def write_constraint_4!(file, map, np, nd, nh)
-  for i in 0...np
-    for j in 0...np
-      next if i == j
+  File.open(file, "a") do |file|
+    for i in 0...np
+      for j in 0...np
+        next if i == j
 
-      for k in 0...nd
-        for l in 0...nh
-          not_x_ijkl = -map[i][j][k][l]
+        for k in 0...nd
+          for l in 0...nh
+            not_x_ijkl = -map[i][j][k][l]
 
-          for _p in 0...np
-            for q in 0...nh
-              next if q == l
+            for _p in 0...np
+              file.flock(File::LOCK_EX)
+              for q in 0...nh
+                next if q == l
 
-              file.puts "#{not_x_ijkl} #{-map[i][_p][k][q]} 0\n" \
-                        "#{not_x_ijkl} #{-map[_p][j][k][q]} 0\n" \
-                        "#{not_x_ijkl} #{-map[j][_p][k][q]} 0\n" \
-                        "#{not_x_ijkl} #{-map[_p][i][k][q]} 0"
+                file.puts "#{not_x_ijkl} #{-map[i][_p][k][q]} 0\n" \
+                          "#{not_x_ijkl} #{-map[_p][j][k][q]} 0\n" \
+                          "#{not_x_ijkl} #{-map[j][_p][k][q]} 0\n" \
+                          "#{not_x_ijkl} #{-map[_p][i][k][q]} 0"
+                        end
+                        file.flock(File::LOCK_UN)
             end
           end
         end
@@ -131,20 +148,24 @@ end
 # @param nd [Integer] the number of days
 # @param nh [Integer] the number of available hours
 def write_constraint_5!(file, map, np, nd, nh)
-  for i in 0...np
-    for j in 0...np
-      next if i == j
+  File.open(file, "a") do |file|
+    for i in 0...np
+      for j in 0...np
+        next if i == j
 
-      for k in 0...nd
-        next if k >= nd - 1
+        for k in 0...nd
+          next if k >= nd - 1
 
-        for l in 0...nh
-          not_x_ijkl = -map[i][j][k][l]
+          for l in 0...nh
+            not_x_ijkl = -map[i][j][k][l]
 
-          for _p in 0...np
-            for q in 0...nh
-              file.puts "#{not_x_ijkl} #{-map[i][_p][k + 1][q]} 0\n" \
-                        "#{not_x_ijkl} #{-map[_p][j][k + 1][q]} 0"
+            for _p in 0...np
+              file.flock(File::LOCK_EX)
+              for q in 0...nh
+                file.puts "#{not_x_ijkl} #{-map[i][_p][k + 1][q]} 0\n" \
+                          "#{not_x_ijkl} #{-map[_p][j][k + 1][q]} 0"
+                        end
+                        file.flock(File::LOCK_UN)
             end
           end
         end
