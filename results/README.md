@@ -12,7 +12,7 @@ Por <a href='https://www.github.com/chrischriscris'>Chus</a> | <a href='https://
 
 Planificar horarios es una tarea que puede ser relativamente común y a la vez compleja en el mundo real, dependiendo de qué tan restringido tenga que ser el horario o cuántos eventos se tengan que planificar y los demás factores involucrados. Por otro lado, es sabido que la planificación de horarios es un problema NP-completo, por lo que no podemos esperar que la con la ayuda de una computadora se pueda resolver en tiempo polinomial, sin embargo, sí podemos esperar que para casos relativamente pequeños o con muchas posibles soluciones un algoritmo pueda encontrar una de ellas en un tiempo razonable menor al que tomaría a un humano.
 
-Luego, el problema de satisfacibilidad booleana (SAT) es otro problema NP-completo (de hecho el primero en ser probado como tal) que consiste en determinar si existe una asignación de valores booleanos a un conjunto de variables que satisfaga una fórmula booleana. Este problema ha sido a lo largo de los años uno de los más estudiados en el área de la computación, por lo que existen muchas técnicas y algoritmos que permiten explorar el espacio de soluciones de forma inteligente y eficiente para intentar encontrar la solución a una instancia en un tiempo razonable.
+Luego, el problema de satisfacibilidad booleana (SAT) es otro problema NP-completo (de hecho el primero en ser probado como tal) que consiste en determinar si existe una asignación de valores booleanos a un conjunto de variables que satisfaga una fórmula booleana. Este problema ha sido a lo largo de los años uno de los más estudiados en el área de la computación, por lo que existen muchas técnicas y algoritmos que permiten explorar el espacio de búsqueda de forma inteligente y eficiente para intentar encontrar la solución a ciertas instancias en un tiempo razonable, explotando al máximo sus características y propiedades.
 
 Con esto en mente, lo que hace de gran interés al problema SAT es que es posible reducir cualquier problema NP-completo a una instancia de SAT en tiempo polinomial, por lo que un solver eficiente de SAT puede ayudar a resolver problemas para los que no fue diseñado originalmente y para los que no se conocen algoritmos específicos eficientes.
 
@@ -36,7 +36,17 @@ $$l \in [0..h-1), \; h \geq 2$$
 
 Número de variables: $n^2d(h-1)$
 
+Véase que el dominio de $l$ es $[0..h-1)$, pues al asumir de los juegos una duración de dos horas, el último juego del día debe empezar a más tardar a las $h-2$ horas.
+
+Luego, no se consideran válidos los juegos de un solo jugador, de un solo día o de una sola hora, pues no sería de ninguna manera consistente con el problema de planificación propuesto.
+
+Teniendo este marco, se procede a modelar las restricciones del problema usando lógica proposicional.
+
 #### Restricciones
+
+**Nota**: Se asume implícitamente que las variables tienen el dominio correcto de acuerdo a su posición en el subíndice.
+
+**Nota**: El cálculo del número de cláusulas se encuentra comentado al final de cada restricción, puede consultarse para mayor detalle.
 
 * Un participante no puede jugar contra sí mismo. $nd(h-1)$ cláusulas.
 
@@ -96,7 +106,7 @@ xijkl => -((xinkm v xjkm v xjkm v xikm) v ...)
 Para un ijkl fijo:
 
 4n(h-2) cláusulas (l != m)
-( 
+(
     -xijkl v -inkm ^
     -xijkl v -njkm ^
     -xijkl v -jnkm ^
@@ -146,16 +156,47 @@ Así, el total de cláusulas está en el orden de $O(n^3dh^2 + n^4dh)$.
 
 ### 2.2 Traducción del problema en formato JSON a formato DIMACS
 
-Para realizar el programa se utilizó el lenguaje de programación Ruby, en su versión 3.2.2. 
+Para realizar el programa se utilizó el lenguaje de programación [Ruby](https://www.ruby-lang.org/es/), en su versión 3.2.2. Para la lectura del archivo JSON y de las fechas en el formato especificado, se utilizaron las librerías `json` y `time`, respectivamente, las cuales vienen incluidas en la librería estándar de Ruby; sin embargo, para la creación del archivo iCalendar se utilizó la gema `icalendar` en su versión 2.8.
 
-En particular, se observó una diferencia significativa en el rendimiento al comparar dos casos: el primero consistió en generar todas las cláusulas en memoria y luego escribirlas en el archivo DIMACS, mientras que el segundo implicó generar y escribir las cláusulas en el archivo de forma simultánea a medida que se iban generando. Por ejemplo, con un caso de 10 participantes, 18 días y 20 horas (`../data/test0.json`), se observó que el primer caso tomaba en promedio 114 segundos para generar el archivo, con claúsulas. Mientras que, con el segundo caso, el tiempo promedio de generación del archivo era de 15.5 segundos. Por ello, se optó por la segunda opción para la generación de los archivos DIMACS.
+Para traducir el problema a una instacia de SAT y escribir las cláusulas en el formato DIMACS se utilizaron los modelados de la sección anterior, las cuales se desarrollaron usando teoremas de lógica proposicional para llevarlas a su forma normal conjuntiva (CNF, conjunción de disyunciones) y luego se escribieron en el formato DIMACS.
 
-Asimismo, en un principio, se observó que al emplear un set para almacenar las cláusulas...
+Una decisión de diseño importante fue la forma en que se iban a generar las cláusulas y se iban a escribir en el archivo en formato DIMACS. Principalmente, se consideraron dos opciones: (i) generar todas las cláusulas en memoria y luego escribirlas en el archivo DIMACS, o (ii) generar y escribir las cláusulas en el archivo de forma simultánea a medida que se iban generando, y dentro de cada opción se intentaron varias implementaciones.
 
+i.a. Guardar las cláusulas en memoria usando un `Array` de Ruby.
+i.b. Guardar las cláusulas en memoria usando un `Set` de Ruby, de esta forma se eliminarían cláusulas repetidas al coste de un mayor tiempo de ejecución (aunque el tiempo de acceso es constante debido a que se trata de una tabla de hash, las constantes ocultas son mayores que las de un `Array`).
+
+ii.a. Escribir las cláusulas secuencialmente en el archivo.
+ii.b. Escribir las cláusulas de forma paralela en el archivo, ya que el orden de las cláusulas no importa.
+ii.c. Escribir cada una de las 5 restricciones en archivos distintos paralelamente y pasar al solver una concatenación in-place de los archivos.
+
+De cada una de estas opciones consideradas, luego de hacer pruebas de rendimiento (principalmente con casos de prueba grandes, de decenas de millones de cláusulas), se observó que la opción (ii.b) era la más eficiente, por lo que es la que se utilizó en el programa final. Algunas notas interesantes de esta consideraciones fueron los siguientes:
+
++ La primera implementación considerada fue la (i.a), pero surgía el problema de que el gasto de memoria llegaba a ser alto para instancias relativamente grandes (de más de 700MB), y la preocupación era la del crecimiento vertiginoso de la memoria a medida que se aumentaba el número de participantes, días y horas (asintóticamente equivalente a $O(n^3dh^2 + n^4dh)$ como se refiere arriba).
+
++ Sorprendentemente, la implementación (i.b) no era mucho más lenta que la (i.a), pero a pesar de que lograba eliminar una cantidad no despreciable de cláusulas repetidas alrededor de 30 para casos de 90 cláusulas y 1 millón para casos de 13 millones de cláusulas, el gasto de memoria llegaba a incluso sobrepasar 1GB en este último caso, lo que iba en contra del diseño que se tenía en mente. Por otro lado, se puede pensar que el Solver de SAT a utilizar probablemente tenga un mecanismo de optimización que ya realice este trabajo de eliminar cláusulas repetidas, por lo que no se consideró esencial hacerlo en el programa.
+
++ La implementación (ii.a) fue posible sin mayor problema debido a que el cómputo del número de cláusulas referido en la sección anterior se realizó de forma correcta, lo que permitía colocar el número de cláusulas a la cabecera del archivo DIMACS de antemano sin necesidad de contadores adicionales o usar el tamaño del `Array` o `Set` de cláusulas, como se hacía en la implementación (i.a) y (i.b), respectivamente.
+
++ Aunque con la implementación de (ii.a) lo que se buscaba inicialmente solo era reducir el gasto de memoria para hacer viable la traducción para casos grandes, se observó que esta implementación resultaba mucho más rápida que las anteriores, lo que terminó siendo la razón principal para elegirla.
+
++ Para (ii.b) e (ii.c) se pueden encontrar bosquejos de la implementación en varias ramas del repositorio, sin embargo, ninguna de estas fue satisfactoria en términos de rendimiento, pues la escritura concurrente de un mismo archivo requiere un mecanismo de sincronización que termina siendo más costoso (para ii.b), y, por lo menos en un disco duro mecánico , la escritura paralela de varios archivos termina siendo más lenta que la escritura secuencial de un solo archivo (para ii.c).
+
+Desarrollando para la implementación escogida, para un caso de 10 participantes, 18 días y 20 horas (`../data/test0.json`), se observó que (i.a) tomaba en promedio 114 segundos para generar el archivo DIMACS, mientras que con el segundo caso el tiempo promedio de generación del archivo era de 15.5 segundos.
+
+Siguiendo con los detalles de implementación, para mapear las variables del modelado (i.e. $x_{ijkl}$) a las variables del formato DIMACS (i.e. $x_{m}$), se idearon en principio las siguientes funciones:
+
+$$ f: \mathbb{N}^4 \to \mathbb{N} \setminus \{0\}$$
+$$f(i, j, k, l) = (h-1)(d(in + j) + k) + l + 1$$
+
+y su inversa
+
+$$f^-1(x) = (x \div (nd(h - 1)), (x \div (d(h - 1))) \mod n, (x \div (h - 1)) \mod d, x \mod (h - 1))$$
+
+sin embargo, dado que se al generar las restricciones se itera numerosas veces sobre $[0..n) \times [0..n) \times [0..d) \times [0..h-1)$, se decidió utilizar un arreglo de cuatro dimensiones para mapear las variables del modelado a las variables del formato DIMACS, por su sencillez y posible mejor eficiencia que la función $f$.
 
 ### 2.3 Glucose Solver
 
-Tras la traducción del problema en un caso de SAT, se procedió a ejecutar el programa `glucose`, en su versión 4.2.1, para resolver el problema. 
+Tras la traducción del problema en un caso de SAT, se procedió a ejecutar el programa `glucose`, en su versión 4.2.1, para resolver el problema.
 
 Se observó que `glucose-syrup` es más rápido que `glucose`, sin embargo...
 
@@ -163,7 +204,7 @@ Se observó que `glucose-syrup` es más rápido que `glucose`, sin embargo...
 
 ### 2.4 iCalendar
 
-Luego, se procedió a generar el archivo iCalendar a partir de la solución obtenida por `glucose`, en caso de ser satisfacible. Para ello, se utilizó la gema `icalendar`, en su versión 2.8. En dicho archivo se incluyó la información de los partidos, así como la información de los equipos, ya sea local o visitante. 
+Luego, se procedió a generar el archivo iCalendar a partir de la solución obtenida por `glucose`, en caso de ser satisfacible. Para ello, se utilizó la gema `icalendar`, en su versión 2.8. En dicho archivo se incluyó la información de los partidos, así como la información de los equipos, ya sea local o visitante.
 
 Se observó que el horario puede presentar inconsistencias según la aplicación de calendario utilizada. Se probó las soluciones obtenidas en `Google Calendar`, `Calendar` (aplicación de Huawei) y `GNOME Calendar` (aplicación de Linux). En el último caso se observó que los horarios se encontraban desfasados en cuatro horas.
 
