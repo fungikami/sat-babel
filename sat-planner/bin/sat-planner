@@ -46,11 +46,11 @@ def main
     exit 0
   end
 
-  cnf_filename = ""
+  cnf_filenames = ""
   t_translation = 0
   thr = Thread.new do
     t_translation = measure_time {
-      cnf_filename = translate_to_cnf(n_participants, n_days, n_hours, filename)
+      cnf_filenames = translate_to_cnf(n_participants, n_days, n_hours, filename)
     }
   end
 
@@ -67,8 +67,8 @@ def main
     exit 1
   end
   puts "\rUnderstanding complete in #{t_translation} seconds! 💅#{" " * 20}\n\n"
-  
-  solution_filename = solve_cnf(cnf_filename, "glucose")
+
+  solution_filename = solve_cnf(cnf_filenames, "glucose")
 
   solution = extract_solution(solution_filename, n_participants, n_days, n_hours)
   if solution.empty?

@@ -12,7 +12,7 @@ Por <a href='https://www.github.com/chrischriscris'>Chus</a> | <a href='https://
 
 Planificar horarios es una tarea que puede ser relativamente común y a la vez compleja en el mundo real, dependiendo de qué tan restringido tenga que ser el horario o cuántos eventos se tengan que planificar y los demás factores involucrados. Por otro lado, es sabido que la planificación de horarios es un problema NP-completo, por lo que no podemos esperar que la con la ayuda de una computadora se pueda resolver en tiempo polinomial, sin embargo, sí podemos esperar que para casos relativamente pequeños o con muchas posibles soluciones un algoritmo pueda encontrar una de ellas en un tiempo razonable menor al que tomaría a un humano.
 
-Luego, el problema de satisfacibilidad booleana (SAT) es otro problema NP-completo (de hecho el primero en ser probado como tal) que consiste en determinar si existe una asignación de valores booleanos a un conjunto de variables que satisfaga una fórmula booleana. Este problema ha sido a lo largo de los años uno de los más estudiados en el área de la computación, por lo que existen muchas técnicas y algoritmos que permiten explorar el espacio de soluciones de forma inteligente y eficiente para intentar encontrar la solución a una instancia en un tiempo razonable.
+Luego, el problema de satisfacibilidad booleana (SAT) es otro problema NP-completo (de hecho el primero en ser probado como tal) que consiste en determinar si existe una asignación de valores booleanos a un conjunto de variables que satisfaga una fórmula booleana. Este problema ha sido a lo largo de los años uno de los más estudiados en el área de la computación, por lo que existen muchas técnicas y algoritmos que permiten explorar el espacio de búsqueda de forma inteligente y eficiente para intentar encontrar la solución a ciertas instancias en un tiempo razonable, explotando al máximo sus características y propiedades.
 
 Con esto en mente, lo que hace de gran interés al problema SAT es que es posible reducir cualquier problema NP-completo a una instancia de SAT en tiempo polinomial, por lo que un solver eficiente de SAT puede ayudar a resolver problemas para los que no fue diseñado originalmente y para los que no se conocen algoritmos específicos eficientes.
 
@@ -36,7 +36,17 @@ $$l \in [0..h-1), \; h \geq 2$$
 
 Número de variables: $n^2d(h-1)$
 
+Véase que el dominio de $l$ es $[0..h-1)$, pues al asumir de los juegos una duración de dos horas, el último juego del día debe empezar a más tardar a las $h-2$ horas.
+
+Luego, no se consideran válidos los juegos de un solo jugador, de un solo día o de una sola hora, pues no sería de ninguna manera consistente con el problema de planificación propuesto.
+
+Teniendo este marco, se procede a modelar las restricciones del problema usando lógica proposicional.
+
 #### Restricciones
+
+**Nota**: Se asume implícitamente que las variables tienen el dominio correcto de acuerdo a su posición en el subíndice.
+
+**Nota**: El cálculo del número de cláusulas se encuentra comentado al final de cada restricción, puede consultarse para mayor detalle.
 
 * Un participante no puede jugar contra sí mismo. $nd(h-1)$ cláusulas.
 
@@ -96,7 +106,7 @@ xijkl => -((xinkm v xjkm v xjkm v xikm) v ...)
 Para un ijkl fijo:
 
 4n(h-2) cláusulas (l != m)
-( 
+(
     -xijkl v -inkm ^
     -xijkl v -njkm ^
     -xijkl v -jnkm ^
@@ -146,7 +156,7 @@ Así, el total de cláusulas está en el orden de $O(n^3dh^2 + n^4dh)$.
 
 ### 2.2 Traducción del problema en formato JSON a formato DIMACS
 
-Para realizar el programa se utilizó el lenguaje de programación Ruby, en su versión 3.2.2. 
+Para realizar el programa se utilizó el lenguaje de programación [Ruby](https://www.ruby-lang.org/es/), en su versión 3.2.2.
 
 En particular, se observó una diferencia significativa en el rendimiento al comparar dos casos: el primero consistió en generar todas las cláusulas en memoria y luego escribirlas en el archivo DIMACS, mientras que el segundo implicó generar y escribir las cláusulas en el archivo de forma simultánea a medida que se iban generando. Por ejemplo, con un caso de 10 participantes, 18 días y 20 horas (`../data/test0.json`), se observó que el primer caso tomaba en promedio 114 segundos para generar el archivo, con claúsulas. Mientras que, con el segundo caso, el tiempo promedio de generación del archivo era de 15.5 segundos. Por ello, se optó por la segunda opción para la generación de los archivos DIMACS.
 
@@ -155,7 +165,7 @@ Asimismo, en un principio, se observó que al emplear un set para almacenar las 
 
 ### 2.3 Glucose Solver
 
-Tras la traducción del problema en un caso de SAT, se procedió a ejecutar el programa `glucose`, en su versión 4.2.1, para resolver el problema. 
+Tras la traducción del problema en un caso de SAT, se procedió a ejecutar el programa `glucose`, en su versión 4.2.1, para resolver el problema.
 
 Se observó que `glucose-syrup` es más rápido que `glucose`, sin embargo...
 
@@ -163,7 +173,7 @@ Se observó que `glucose-syrup` es más rápido que `glucose`, sin embargo...
 
 ### 2.4 iCalendar
 
-Luego, se procedió a generar el archivo iCalendar a partir de la solución obtenida por `glucose`, en caso de ser satisfacible. Para ello, se utilizó la gema `icalendar`, en su versión 2.8. En dicho archivo se incluyó la información de los partidos, así como la información de los equipos, ya sea local o visitante. 
+Luego, se procedió a generar el archivo iCalendar a partir de la solución obtenida por `glucose`, en caso de ser satisfacible. Para ello, se utilizó la gema `icalendar`, en su versión 2.8. En dicho archivo se incluyó la información de los partidos, así como la información de los equipos, ya sea local o visitante.
 
 Se observó que el horario puede presentar inconsistencias según la aplicación de calendario utilizada. Se probó las soluciones obtenidas en `Google Calendar`, `Calendar` (aplicación de Huawei) y `GNOME Calendar` (aplicación de Linux). En el último caso se observó que los horarios se encontraban desfasados en cuatro horas.
 
