@@ -221,7 +221,7 @@ Para evitar ejecutar una traducción y el posterior intento de resolución de in
 - $h \geq 2$: Cada torneo debe durar al menos dos horas.
 - $d \geq 2$: Dado que un participante no puede jugar dos veces el mismo día, para el número mínimo de participantes se necesitan al menos dos días para tener un torneo consistente.
 - $d \geq 2 (n - 1)$: Dado que cada equipo debe jugar dos veces contra los demás equipos, no será posible completar el torneo en menos tiempo.
-- $hd \leq 2n(n - 1)$: Dado que se han de planificar $n(n-1)$ partidos de 2 horas de duración..
+- $hd \geq 2n(n - 1)$: Dado que se han de planificar $n(n-1)$ partidos de 2 horas de duración..
 
 De esa forma, si algunas de las condiciones anteriores no se cumple el programa termina sin generar siquiera una traducción del problemas.
 
