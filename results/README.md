@@ -213,7 +213,7 @@ Luego, se procedió a generar el archivo iCalendar a partir de la solución obte
 
 Se observó que el horario puede presentar inconsistencias según la aplicación de calendario utilizada. Las soluciones obtenidas se importaron a `Google Calendar`, `Calendar` (aplicación de Huawei) y `GNOME Calendar`, y en este último caso se observó que los horarios se encontraban desfasados en cuatro horas (porque el horario de la máquina es UTC-4 (Caracas)), mientras que en los otros dos casos se mostraban correctamente.
 
-### 2.5 Otras consideraciones
+### 2.5 Fail fast
 
 Para evitar ejecutar una traducción y el posterior intento de resolución de instancias del problema que por su forma son inconsistentes o incompatibles con las restricciones dadas, se implementó una función que verifica ciertas condiciones mínimas para que el problema sea por lo menos consistente con las restricciones (plausible de solucionar). Esto se hace verificando:
 
@@ -266,30 +266,27 @@ Se crearon casos de prueba, fáciles y difíciles, para probar el correcto funci
 |  13    |     Fácil      |     2     |    1   |    2    |      2     |         4   |          42   |    0.152   |             -            |             -           |    Sí (UNSAT)    |
 |  14    |     Medio      |    10     |   12   |    8    |     90     |      8400   |     4035090   |    0.138   |             -            |             -           |    Sí (UNSAT)    |
 |  15    |     Medio      |    10     |   15   |   14    |     90     |     19500   |    15688590   |    0.131   |             -            |             -           |    Sí (UNSAT)    |
-|  16    |   Difícil      |    12     |   60   |    6    |    132     |     16200   |    21617412   |   +55800   |        4.899315958       |             -           |    No (UNSAT)    |
+|  16    |   Difícil      |    10     |   10   |    18    |    90     |     16200   |    21617412   |   +55800   |        4.899315958       |             -           |    No (UNSAT)    |
 
 ### 3.4 Análisis de los resultados
 
- <!-- Tests 13, 14, 15 se ven que son UNSAT desde antes de generar el archivo en formato DIMACS  -->
-
-<!-- Analizar las gráficas -->
-
-<!-- Hablar sobre que el caso dificil duró apróximadamente 15h en ejecucion a pesar de no ser el más grande de los casos, y es debido a que no es satisfacible y la forma en la que se ejecuta el sat solver no está optimizada para probar la no-satisfacibilidad de una instancia (reinicios aleatorios, etc.), por lo que no existen características que el solver pueda explotar para encontrar una solución en un tiempo razonable y la ejecución termina revisando el espacio de forma casi exhaustiva. -->
 
  |![Nro. Variables vs. Nro. Cláusulas](./img/Figure_1.png) | ![Tiempo de traducción vs. Tiempo de solución](./img/Figure_2.png) |
 |:------------------------:| :------------------------:|
 | Figura 1: Nro. Variables vs. Nro. Cláusulas | Figura 2: Tiempo de traducción vs. Tiempo de solución |
 
+Como se puede ver en la tabla, la implementación de la traducción a CNF de las instancias resulta ser muy eficiente y no representa un cuello de botella para la ejecución del programa, solamennte siendo más lenta que la resolución misma del problema en tres de las, y esto tiene sentido, pues la traducción es $O(n^3dh^2 + n^4dh)$, mientras que la resolución es exponencial en el peor caso, por lo que en los casos en los que los algoritmos de `glucose` no logran encontrar explotar las características del problema con efectividad, la traducción resulta más rápida, incluso tratándose de un programa interpretado, en contraposición al solver que está compilado.
 
+Los casos que más difícultad pueden suponer al SAT solver son aquellos en los que el número de soluciones es pequeño (no hay holgura para acomodar los horarios), o aquellos en los que, a pesar de pasar las condiciones de consistencia, no hay solución, por lo que el solver probablemente tenga que explorar más exhaustivamente el espacio de búsqueda para determinar que no hay solución. Un ejemplo de esto es el caso 16, en el que el número de variables es relativamente pequeño (varias veces más que el caso 10, que es satisfacible), pero que al no ser satisfacible, `glucose` no terminaba su ejecución tras aproximadamente 15 horas y media.
+
+Esto último puede deberse a que la forma en la que se ejecuta el solver no está optimizada para probar la no-satisfacibilidad de una instancia (usa reinicios aleatorios, etc.), sino que más bien intenta conseguir una solución, por lo que no existen características favorables con las que el solver puedar "podar" parte del espacio y hallar una solución en un tiempo razonable. Así, se tiene que el tiempo de resolución con estas optimizaciones que se utilizan no necesariamente depende del número de variables y cláusulas, sino de las características específicas de la instancias (siempre acotado por el peor caso exponencial, por supuesto).
 
 ## 4. Conclusiones
 
-<!-- Expandir -->
-
-+ La importancia de un buen diseño.
-
-+ La importancia de la elección de las estructuras de datos.
-
-+ Ensayo y error.
++ Las pruebas realizadas a lo largo de la implementación del proyecto resaltan sobremanera la importancia de un buen diseño y de la elección de las estructuras de datos adecuadas para la resolución de un problema, pues en muchos casos el tiempo de ejecución de un programa puede verse reducido en órdenes de magnitud con simples decisiones de diseño. No solamente hablando de eficiencia en el tiempo, sino también en uso de memoria, ya que aunque hoy en día la memoria no es un recurso tan escaso como lo era hace unos años, sigue siendo un recurso limitado y no estar limitados por la memoria reenfoca el problema más bien en la optimización del tiempo.
 
 + A pesar de ser NP-completo, se resuelven casos de cientos de miles de variables y millones de cláusulas en un tiempo muchísimo menor al que en teoría tomaría al peor caso (exponencial), sin embargo, esto no quiere decir que se pueda resolver cualquier instancia en tiempo polinomial, sino que sirve para tener una visión del estado del arte de los algoritmos de SAT y la forma en que son capaces de sacar ventaja de cada propiedad de ciertas instancias para resolverlas en un tiempo razonable.
+
++ Aunque no siempre resulta lo más eficiente o práctico, el hecho de que está asegurada que la traducción de un problema NP-completo a otro se puede hacer en tiempo polinomial es una herramienta muy poderosa que resulta de utilidad de forma inesperada en muchos casos. Tómese por ejemplo que, a pesar de que el problema de hacer horarios para torneos ficticios puede no ser tan importante, hoy en día se utilizan SAT solvers para resolver problemas combinatorios reales que surgen en aplicaciones industriales.
+
++ En el campo de la inteligencia artificial es importante saber abstraer problemas a representaciones ―o formas de representar―  ya preestablecidas, pues de esta manera se puede aprovechar el conocimiento ya existente y construir sobre él. Sin embargo, es importante tener sumo cuidado con los detalles, pues muchas de las aplicaciones de la inteligencia artificial buscan resolver problemas eficientemente, con la finalidad de que den la impresión de inteligencia (pensemos en agentes adversarios, enemigos en videojuegos, etc.), y un mal diseño o mala aplicación de los algoritmos puede llevar a que, a pesar de contar con recursos computacionales suficientes, no se logren resolver los problemas (o por lo menos no con la fluidez deseada) por una falta de entendimiento de las propiedades de los algoritmos, los problemas que se están tratando de resolver y las causas de los problemas de rendimiento.
